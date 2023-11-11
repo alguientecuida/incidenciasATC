@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Str;
 use App\Models\CLIENTE;
+use App\Models\EMPLEADO;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 
@@ -195,10 +196,15 @@ class ODTSController extends Controller
 
    public function generarPDF($id){
     $odt = ODT::find($id);
+    $sucursal = SUCURSAL::where('ID', $odt->ID_sucursal)->get();
     $cliente = CLIENTE::find($odt->sucursal->ID_CLIENTE);
-    $imagenes = IMAGEN_ODT::where('ID_odt', $id);
-    $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'cliente' => $cliente, 'imagenes'=>$imagenes]);
+    $empleado = EMPLEADO::where('ID_SUCURSAL', $odt->sucursal->ID)->where('NRO_EMERGENCIA', '1')->first();
+    $imagenes = IMAGEN_ODT::where('ID_odt', $id)->get();
+    $logo = public_path('img/LogoPDF.jpg');
+    return $imagenes;
+    $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'imagenes'=>$imagenes, 'logo' => $logo, 'empleado' => $empleado, 'cliente' => $cliente]);
 
-    return $pdf->stream();
+    //return $pdf->stream();
+    
    }
 }
