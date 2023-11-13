@@ -141,7 +141,7 @@ class ODTSController extends Controller
     $nombre = Str::random(10) . $request->file('file')->getClientOriginalName();
     $ruta = storage_path() . '\app\public\imagenesODT/' . $nombre;
 
-    Image::make($request->file('file'))->resize(1200, null, function ($constraint) {
+    Image::make($request->file('file'))->resize(400, null, function ($constraint) {
         $constraint->aspectRatio();
     })->save($ruta);
 
@@ -199,12 +199,15 @@ class ODTSController extends Controller
     $sucursal = SUCURSAL::where('ID', $odt->ID_sucursal)->get();
     $cliente = CLIENTE::find($odt->sucursal->ID_CLIENTE);
     $empleado = EMPLEADO::where('ID_SUCURSAL', $odt->sucursal->ID)->where('NRO_EMERGENCIA', '1')->first();
-    $imagenes = IMAGEN_ODT::where('ID_odt', $id)->get();
+    $imagenes = IMAGEN_ODT::select('url')->where('ID_odt', $id)->get();
+    $rutasImagenes = $imagenes->pluck('url')->map(function ($url) {
+        return public_path($url);
+    })->toArray();
     $logo = public_path('img/LogoPDF.jpg');
-    return $imagenes;
-    $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'imagenes'=>$imagenes, 'logo' => $logo, 'empleado' => $empleado, 'cliente' => $cliente]);
+    //return $rutasImagenes;
+    $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'logo' => $logo, 'empleado' => $empleado, 'cliente' => $cliente, 'imagenes' => $rutasImagenes]);
 
-    //return $pdf->stream();
+    return $pdf->stream();
     
    }
 }

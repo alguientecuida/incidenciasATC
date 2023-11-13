@@ -129,10 +129,11 @@
       <p class="pt-3">{{$odt->Detalle_cierre}}</p>
     </div>
     <div class="pt-5">
+      
       @if($imagenes)
+      <p><b class="p-3">Imagenes</b></p>
         @foreach ($imagenes as $imagen)
-        
-          <img src="{{$imagen->url}}">
+          <img src="{{$imagen}}" alt="">
         @endforeach
       @endif
     </div>
