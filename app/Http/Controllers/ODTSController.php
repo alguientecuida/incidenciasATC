@@ -206,8 +206,35 @@ class ODTSController extends Controller
     $logo = public_path('img/LogoPDF.jpg');
     //return $rutasImagenes;
     $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'logo' => $logo, 'empleado' => $empleado, 'cliente' => $cliente, 'imagenes' => $rutasImagenes]);
-
+    
+    $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'logo' => $logo, 'empleado' => $empleado, 'cliente' => $cliente, 'imagenes' => $rutasImagenes]);
     return $pdf->stream();
     
+   }
+
+   public function generarODT(Request $request){
+    $fecha = Carbon::now('America/Santiago');
+    // Puedes formatear la fecha y hora según tus necesidades
+    $fechaY = $fecha->format('Y-m-d H:i:s');
+    $ultimoodt = ODT::latest('ID_odt')->first();
+    $odt = new ODT();
+    $odt->Fecha_creacion = $fechaY;
+    $odt->Numero_odt = $ultimoodt ? $ultimoodt->Numero_odt + 1 : 1;
+    $odt->ID_usuario = session('usuario')['ID'];
+    $odt->Estado = 'A';
+    $odt->Fecha_inicio = $fechaY;
+    $odt->ID_sucursal = $request->sucursal;
+    $odt->Tipo_trabajo = $request->trabajo;
+
+    $odt->save();
+
+    $asignacion = new ASIGNACION();
+    $asignacion->ID_odt = $odt->ID_odt;
+    $asignacion->ID_usuario = $request->tecnico;
+    $asignacion->Fecha = $fechaY;
+
+    $asignacion->save();
+
+    return redirect()->route("ODT'S");
    }
 }

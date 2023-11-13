@@ -2,7 +2,7 @@
 @section('contenido_principal')
 
 @if(session('usuario')['TIPO']=='Jefe Tecnico')
-<a href="#" class="float" title="CREAR ODT">
+<a href="{{route('Crear ODT')}}" class="float" title="CREAR ODT">
     <i class="fa-solid fa-plus my-float" title="CREAR ODT" style="color: #ffffff;"></i>
     </a>
 @endif
@@ -12,7 +12,7 @@
         @if(session('usuario')['TIPO']=='Jefe Tecnico')
         <div class="col-auto mb-0">
             <b>Desea crear una nueva ODT? </b>
-            <button type="button" class="btn btn-warning text-white" title="CREAR ODT"><i class="fa-solid fa-plus" style="color: #ffffff;"></i> Crear ODT</button>
+            <a href="{{route('Crear ODT')}}"><button type="button" class="btn btn-warning text-white" title="CREAR ODT"><i class="fa-solid fa-plus" style="color: #ffffff;"></i> Crear ODT</button></a>
         </div>
         @endif
       </div>
@@ -34,6 +34,7 @@
             <tbody>
                 @if(count($odts) > 0)
                 @foreach($odts as $odt)
+                <tr>
                 <th scope="row">#{{$odt->ID_odt}}</th>
                 <td>{{$odt->Numero_odt}}</td>
                 <td>

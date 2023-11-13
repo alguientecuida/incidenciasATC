@@ -57,44 +57,55 @@
 
         .celda2:first-child {
             font-weight: bold;
-            width: 32%; /* La primera celda se ajusta al largo del texto */
+            width: 35%; /* La primera celda se ajusta al largo del texto */
         }
         .celda2:not(:first-child) {
             width: 100%; /* Toma el ancho restante de la tabla */
         }
+
+        .pdf{
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+        .footer{
+          text-align: end;
+          font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+          font-size: 9px;
+          line-height: 0%
+          !important;
+        }
   </style>
   </head>
 
-  <header>
+  <header class='pdf'>
     <img src="{{$logo}}">
-    <p class="text-end">N° {{$odt->Numero_odt}}</p>
+    <p class='text-end'>N° <span style="color: red;">{{ $odt->Numero_odt }}</span></p>
     <p class="text-end parrafo-personalizado">Fecha {{ \Carbon\Carbon::parse($odt->Fecha_cierre)->format('d/m/Y') }}</p>
 
   </header>
   <body>
 
-    <p class="text-center pb-5"><b>ASIGNACIÓN DE TRABAJO</b></p>
+    <p class="text-center pb-3 pdf"><b>ASIGNACIÓN DE TRABAJO</b></p>
           
         
 
         <div class="tabla" id='tabla1'>
           <div class="fila">
-              <div class="celda">Nombre de Técnico</div>
-              <div class="celda">@foreach($odt->usuarioAsig as $asignacion)
+              <div class="celda pdf">Nombre de Técnico</div>
+              <div class="celda pdf">@foreach($odt->usuarioAsig as $asignacion)
                 {{$asignacion->NOMBRE}}@endforeach</div> <!-- Segunda celda sin contenido inicial -->
           </div>
           <div class="fila">
-              <div class="celda">Persona de contacto</div>
-              <div class="celda">{{$empleado->NOMBRE}}</div> <!-- Segunda celda sin contenido inicial -->
+              <div class="celda pdf">Persona de contacto</div>
+              <div class="celda pdf">{{$empleado->NOMBRE}}</div> <!-- Segunda celda sin contenido inicial -->
           </div>
-          <div class="fila">
+          <div class="fila pdf">
               <div class="celda">Teléfono de contacto</div>
               <div class="celda">{{$empleado->CELULAR}}</div> <!-- Segunda celda sin contenido inicial -->
           </div>
           <!-- Agrega más filas según sea necesario -->
       </div>
 
-      <div class="tabla " id='tabla2'>
+      <div class="tabla pdf" id='tabla2'>
         <div class="fila">
             <div class="celda2">RUT Cliente</div>
             <div class="celda2">{{$cliente->RUT}}</div> <!-- Segunda celda sin contenido inicial -->
@@ -123,7 +134,7 @@
         <!-- Agrega más filas según sea necesario -->
     </div>
 
-    <div class="p-2 borde-negro">
+    <div class="p-2 borde-negro pdf">
       <p></p>
       <b class="pt-5">Descripción trabajo</b>
       <p class="pt-3">{{$odt->Detalle_cierre}}</p>
@@ -131,7 +142,7 @@
     <div class="pt-5">
       
       @if($imagenes)
-      <p><b class="p-3">Imagenes</b></p>
+      <p><b class="p-3 pdf">Imágenes</b></p>
         @foreach ($imagenes as $imagen)
           <img src="{{$imagen}}" alt="">
         @endforeach
@@ -143,5 +154,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
   </body>
+
+  <footer class="footer text-end">
+    <hr>
+    <p>Alguien te Cuida SpA</p>
+    <p>www.alguientecuida.cl</p>
+    <p>600 828 8000</p>
+    <p>Av. Colón 2864-A, Valparaíso</p>
+  </footer>
 </html>
 

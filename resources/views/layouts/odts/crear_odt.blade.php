@@ -14,7 +14,7 @@
                     <div class="card-header">
                       <h3>Crear ODT</h3>
                     </div>
-                    <form method="POST" action="#">
+                    <form method="POST" action="{{route('crear.odt')}}">
                     @csrf
                     <div class="card-body">
                         

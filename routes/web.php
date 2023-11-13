@@ -21,6 +21,7 @@ use App\Http\Middleware\Encargado;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+//RUTA QUE GENERA EL PDF
 Route::get('/odt/generar/pdf/{id}', [ODTSController::class, 'generarPDF'])->name('pdf_odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
 Route::get('/', function () {
@@ -69,6 +70,8 @@ Route::get('/agregar/revision/{id}', [REPORTESCONTROLLERS::class, 'edit'])->name
 //POST AGREGAR REVISION
 Route::post('/agregar/revision/listo/{id}', [REPORTESCONTROLLERS::class, 'agregarRevision'])->name('agregar.revision')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
+//ODTS:
+
 //ASIGANAR ODT A TECNICOS
 Route::get('/asignar/odt', [HomeController::class, 'asignarODT'])->name('Asignar ODT')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 //POST PARA ASIGNAR ODT
@@ -79,18 +82,7 @@ Route::get('/odts', [ODTSController::class, 'index'])->name("ODT'S")->middleware
 
 //CREAR ODT
 Route::get('/crear/odt', [ODTSController::class, 'crearODT'])->name("Crear ODT")->middleware(['S:Jefe Tecnico']);
-
-//PRUEBA RELACIONES
-Route::get('/relaciones', [REPORTESCONTROLLERS::class, 'relaciones']);
-
-
-//PRUEBA GENERAR NUMERO DE TICKET ALEATORIO
-
-//Route::get('/prueba',[REPORTESCONTROLLERS::class, 'TICKETS']);
-
-
-
-//SE TRABAJARA COMO RUTA DE WEB Y TAMBIEN DESPUES SE TIENEN QUE APLICAR EN API
+Route::post('/generar/odt/sin/reporte', [ODTSController::class, 'generarODT'])->name('crear.odt')->middleware(['S:Jefe Tecnico']);
 
 //ODTS POR TECNICO
 Route::get('/odts/tecnicos', [HomeController::class, 'listarODTSTecnicos'])->name("ODT'S Tecnicos")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']); 
@@ -103,6 +95,19 @@ Route::get('/odts/cambio/estado/{id}', [ODTSController::class, 'estadoEnProceso'
 Route::get('/odt/cerrar/{id}', [HomeController::class, 'cerrarODT'])->name('Cerrar ODT')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 Route::post('/odt/cerrar/imagenes/{id}', [ODTSController::class, 'imagenODT'])->name('guardar.imagen')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 Route::post('/odt/cerrar/detalle/{id}', [ODTSController::class, 'cerrarODT'])->name('cerrar.odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
+
+
+//PRUEBA RELACIONES
+Route::get('/relaciones', [REPORTESCONTROLLERS::class, 'relaciones']);
+
+
+//PRUEBA GENERAR NUMERO DE TICKET ALEATORIO
+
+//Route::get('/prueba',[REPORTESCONTROLLERS::class, 'TICKETS']);
+
+
+
+
 
 
 
