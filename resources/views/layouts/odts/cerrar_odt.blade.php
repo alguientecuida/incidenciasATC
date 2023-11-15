@@ -32,6 +32,13 @@
                     @csrf
                     <label for="observacion" class="form-label">Ingrese Detalle del cierre de ODT</label>
                     <textarea class="form-control textarea" id="detalle" name='detalle' rows="4" placeholder='Ingrese la descripción del trabajo'></textarea>
+
+                    <label for="nombre_contacto">Ingrese el nombre de la perosna que lo recibió</label>
+                    <div>
+                    <input type="text" name="nombre_contacto" id="nombre_contacto" class="form-control text-center" placeholder="Nombre de la persona que lo recibió">
+                    </div>
+                    <label for="numero_contacto">Ingrese el numero de celular de la persona que lo recibió</label>
+                    <input type="text" class="form-control text-center" name="numero_contacto" id="numero_contacto" placeholder="912345678">
                 </div>
 
                 <div class="card-footer">

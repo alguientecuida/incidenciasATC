@@ -29,7 +29,7 @@
                     $ultimaAct = App\Models\REVISION::select('*')->where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->first();
                 @endphp
                 @if($ultimaAct->Estado != 'F')
-              <tr class='text-center  @if($ultimaAct->Estado == 'DJT') @endif'>
+              <tr class='text-center  table-info'>
                 
                     <th scope="row">{{$reporte->ID_Reporte}}</th>
                     <td>{{ $reporte->sucursal->NOMBRE_SUCURSAL}}</td>

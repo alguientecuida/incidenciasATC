@@ -34,8 +34,11 @@
               </tr>
             </thead>
             <tbody>
+                
                 @if(count($odts) > 0)
+                
                 @foreach($odts as $odt)
+                <tr>
                 <th scope="row">#{{$odt->ID_odt}}</th>
                 <td>{{$odt->Numero_odt}}</td>
                 <td>
@@ -57,7 +60,7 @@
                   @elseif($odt->Estado == "F") Finalizada
                 @endif</td>
                 <td>
-                    @if($odt->Estado == 'EP')
+                    @if($odt->Estado != 'A')
                         {{ \Carbon\Carbon::parse($odt->Fecha_inicio)->format('d-m-Y') }}
                     @elseif($odt->Estado == 'A')
                         -
@@ -79,10 +82,15 @@
                         <i class="fa-regular fa-circle-play"></i>
                     </a>
                   @elseif($odt->Estado == 'EP')
-                    <a class="btn btn-success text-white" title="Cambiar estado EN PROCESO" href="{{route('Detalle Reporte', $odt->ID_reporte)}}">
+                    <a class="btn btn-success text-white" title="Cambiar estado FINALIZADO" href="{{route("Cerrar ODT", $odt->ID_odt)}}">
                         <i class="fa-solid fa-check"></i>
                     </a>
                   @endif
+
+                  @if($odt->Estado == 'F')
+                    <a href="{{route('pdf_odt', $odt->ID_odt)}}" class="btn btn-danger text-white" title="Generar PDF"><i class="fa-solid fa-file-pdf"></i></i></a>
+                  @endif
+                  
                 </td>
                 @endforeach
     {{-- Aquí puedes iterar sobre la lista y mostrar los datos si es necesario --}}

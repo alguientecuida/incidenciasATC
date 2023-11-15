@@ -27,12 +27,16 @@
                 <th scope="col">Fecha de asignación</th>
                 <th scope="col">Técnico asignado</th>
                 <th scope="col">Estado</th>
+                <th scope="col">Fecha de inicio</th>
+                <th scope="col">Fecha de termino</th>
                 <th scope="col">Acciones</th>
 
               </tr>
             </thead>
             <tbody>
+                
                 @if(count($odts) > 0)
+                
                 @foreach($odts as $odt)
                 <tr>
                 <th scope="row">#{{$odt->ID_odt}}</th>
@@ -56,9 +60,28 @@
                   @elseif($odt->Estado == "F") Finalizada
                 @endif</td>
                 <td>
+                    @if($odt->Estado != 'A')
+                        {{ \Carbon\Carbon::parse($odt->Fecha_inicio)->format('d-m-Y') }}
+                    @elseif($odt->Estado == 'A')
+                        -
+                    @endif
+                </td>
+                <td>
+                    @if($odt->Estado != 'F')
+                        -
+                    @elseif($odt->Estado == 'F')
+                        {{ \Carbon\Carbon::parse($odt->Fecha_cierre)->format('d-m-Y') }}
+                    @endif
+                </td>
+                <td>
                   @if($odt->ID_reporte != NULL)
                   <a class="btn btn-warning material-symbols-outlined text-white" title="Revisar Reporte de ODT" href="{{route('Detalle Reporte', $odt->ID_reporte)}}">info</a> 
                   @endif
+
+                  @if($odt->Estado == 'F')
+                    <a href="{{route('pdf_odt', $odt->ID_odt)}}" class="btn btn-danger text-white" title="Generar PDF"><i class="fa-solid fa-file-pdf"></i></i></a>
+                  @endif
+                  
                   
                 </td>
                 @endforeach

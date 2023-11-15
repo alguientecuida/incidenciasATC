@@ -29,7 +29,7 @@
                     $ultimaAct = App\Models\REVISION::select('*')->where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->first();
                 @endphp
                 @if($ultimaAct->Estado != 'F')
-              <tr class='text-center  table-secondary'>
+              <tr class='text-center  table-warning'>
                 
                     <th scope="row">{{$reporte->ID_Reporte}}</th>
                     <td>{{ $reporte->sucursal->NOMBRE_SUCURSAL}}</td>
@@ -41,7 +41,7 @@
                         @endif
                       @endforeach
                     @if($ultimaAct->Estado == 'DS')
-                        <td>Derivado a Soporte</td>
+                        <td>Visita Técnica Agendada</td>
                     @endif
                     <td>{{$reporte->USUARIO->NOMBRE}}</td>
                     <td>{{ \Carbon\Carbon::parse($reporte->Fecha)->format('d-m-Y') }}</td>

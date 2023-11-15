@@ -160,6 +160,8 @@ class ODTSController extends Controller
     $odt->Fecha_cierre = $fechaY;
     $odt->Detalle_cierre = $request->detalle;
     $odt->Estado = 'F';
+    $odt->persona_contacto = $request->nombre_contacto;
+    $odt->numero_contacto = $request->numero_contacto;
 
     $odt->save();
 
@@ -207,7 +209,7 @@ class ODTSController extends Controller
     //return $rutasImagenes;
     $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'logo' => $logo, 'empleado' => $empleado, 'cliente' => $cliente, 'imagenes' => $rutasImagenes]);
     
-    $pdf = Pdf::loadView('layouts.odts.pdf_odt', ['odt' => $odt, 'logo' => $logo, 'empleado' => $empleado, 'cliente' => $cliente, 'imagenes' => $rutasImagenes]);
+    
     return $pdf->stream();
     
    }

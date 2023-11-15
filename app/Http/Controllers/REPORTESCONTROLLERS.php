@@ -74,6 +74,19 @@ class REPORTESCONTROLLERS extends Controller
 
         $revision->save();
 
+        $sucursal = SUCURSAL::find($reporte->ID_Sucursal);
+
+        $bitacora = new BITACORA();
+        $bitacora->fecha = $fechaY;
+        $bitacora->mensaje = $observacion;
+        $bitacora->detalles = 'Reporte de falla' . $sucursal->NOMBRE_SUCURSAL;
+        $bitacora->operador = session('usuario')['NOMBRE'];
+        $bitacora->id_sucursal = $reporte->ID_Sucursal;
+        $bitacora->tipo_clave = 'Registro Reporte';
+        $bitacora->FechaActualizacion = $fechaY;
+
+        $bitacora->save();
+
         return redirect()->route('Reportes General')->withErrors('1');
     }
 
@@ -262,6 +275,43 @@ class REPORTESCONTROLLERS extends Controller
     //return dd($reportes);
     }
 
+    public function reportesTecnicos(){
+        //$reportes = DB::table('REPORTES')->join('REVISIONES', 'REPORTES.ID_Reporte', '=', 'REVISIONES.ID_Reporte')->where('REVISIONES.Estado', '=', 'F')->select('REPORTES.*')->get();
+        //$reportes = REPORTE::whereHas('revisiones', function ($query) {
+        //    $query->where('Estado', 'DS');
+        //})->latest('ID_Reporte')->first()->get();
+
+        $reportes = REPORTE::select('reportes.*')
+        ->join('revisiones', function ($join) {
+        $join->on('reportes.ID_Reporte', '=', 'revisiones.ID_Reporte')
+            ->whereRaw('revisiones.Fecha = (SELECT MAX(Fecha) FROM revisiones WHERE ID_Reporte = reportes.ID_Reporte)')
+            ->where('revisiones.Estado', '=', 'DT');
+    })
+    ->get();
+
+
+    return view('layouts.vistas_reportes.reportes_tecnicos', ['reportes' => $reportes]);
+    //return dd($reportes);
+    }
+
+    public function reportesDClientes(){
+        //$reportes = DB::table('REPORTES')->join('REVISIONES', 'REPORTES.ID_Reporte', '=', 'REVISIONES.ID_Reporte')->where('REVISIONES.Estado', '=', 'F')->select('REPORTES.*')->get();
+        //$reportes = REPORTE::whereHas('revisiones', function ($query) {
+        //    $query->where('Estado', 'DS');
+        //})->latest('ID_Reporte')->first()->get();
+
+        $reportes = REPORTE::select('reportes.*')
+        ->join('revisiones', function ($join) {
+        $join->on('reportes.ID_Reporte', '=', 'revisiones.ID_Reporte')
+            ->whereRaw('revisiones.Fecha = (SELECT MAX(Fecha) FROM revisiones WHERE ID_Reporte = reportes.ID_Reporte)')
+            ->where('revisiones.Estado', '=', 'DC');
+    })
+    ->get();
+
+
+    return view('layouts.vistas_reportes.reportes_dCliente', ['reportes' => $reportes]);
+    //return dd($reportes);
+    }
     
     
 }

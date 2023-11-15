@@ -66,24 +66,49 @@
         .pdf{
           font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
         }
-        .footer{
-          text-align: end;
+        @page {
+          margin: 100px 25px;
+        }
+
+        header {
+          position: fixed;
+          left: 0px;
+          top: -60px;
+          height: 50px;
+          right: 0px;
+        }   
+        footer{
+          position: fixed;
+          bottom: 0px;
+          right: 0px;
+          left: 0px;
+          height: 0px;
           font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
           font-size: 9px;
-          line-height: 0%
-          !important;
+ 
+          
         }
+        
   </style>
   </head>
-
+  <body>
   <header class='pdf'>
     <img src="{{$logo}}">
     <p class='text-end'>N° <span style="color: red;">{{ $odt->Numero_odt }}</span></p>
     <p class="text-end parrafo-personalizado">Fecha {{ \Carbon\Carbon::parse($odt->Fecha_cierre)->format('d/m/Y') }}</p>
 
   </header>
-  <body>
+  <footer class="text-end">
+    <hr>
+    <p>Alguien te Cuida SpA</p>
+    <p>www.alguientecuida.cl</p>
+    <p>600 828 8000</p>
+    <p>Av. Colón 2864-A, Valparaíso</p>
+  </footer>
 
+    <div class="mt-5">
+
+  <main>
     <p class="text-center pb-3 pdf"><b>ASIGNACIÓN DE TRABAJO</b></p>
           
         
@@ -96,11 +121,11 @@
           </div>
           <div class="fila">
               <div class="celda pdf">Persona de contacto</div>
-              <div class="celda pdf">{{$empleado->NOMBRE}}</div> <!-- Segunda celda sin contenido inicial -->
+              <div class="celda pdf">{{$odt->persona_contacto}}</div> <!-- Segunda celda sin contenido inicial -->
           </div>
           <div class="fila pdf">
               <div class="celda">Teléfono de contacto</div>
-              <div class="celda">{{$empleado->CELULAR}}</div> <!-- Segunda celda sin contenido inicial -->
+              <div class="celda">{{$odt->numero_contacto}}</div> <!-- Segunda celda sin contenido inicial -->
           </div>
           <!-- Agrega más filas según sea necesario -->
       </div>
@@ -139,28 +164,27 @@
       <b class="pt-5">Descripción trabajo</b>
       <p class="pt-3">{{$odt->Detalle_cierre}}</p>
     </div>
-    <div class="pt-5">
+    
       
       @if($imagenes)
+      <div class="pt-3">
       <p><b class="p-3 pdf">Imágenes</b></p>
         @foreach ($imagenes as $imagen)
-          <img src="{{$imagen}}" alt="">
+          <img src="{{$imagen}}" class="m-1">
         @endforeach
+      </div>
       @endif
-    </div>
+   
+  </div>
     
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
-  </body>
+  
+  </main>
+  
+</body>
 
-  <footer class="footer text-end">
-    <hr>
-    <p>Alguien te Cuida SpA</p>
-    <p>www.alguientecuida.cl</p>
-    <p>600 828 8000</p>
-    <p>Av. Colón 2864-A, Valparaíso</p>
-  </footer>
 </html>
 

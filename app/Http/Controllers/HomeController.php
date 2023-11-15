@@ -67,4 +67,12 @@ class HomeController extends Controller
         $id = $id;
         return view('layouts.odts.cerrar_odt', ['id'=>$id]);
     }
+
+    public function reportesTecnicos(){
+        return view('layouts.vistas_reportes.reportes_tecnicos');
+    }
+
+    public function reportesDCliente(){
+        return view('layouts.vistas_reportes.reportes_dCliente');
+    }
 }

@@ -19,6 +19,7 @@
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script src="https://kit.fontawesome.com/6fe936433f.js" crossorigin="anonymous"></script>
     <script src="{{ asset('js/tab-vertical.js') }}"></script>
+    <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/x-icon"/>
     @yield('css')
 
 
@@ -27,18 +28,19 @@
   <header>
     <nav class="navbar navbar-expand-lg bg-nav center">
         <div class="container-fluid">
-            <img src="{{asset('img/LOGO.png')}}" alt="Alguien Te Cuida" max-width= '100%'; height="80">
+            <a href="{{route('Reportes General')}}"><img src="{{asset('img/LOGO.png')}}" alt="Alguien Te Cuida" max-width= '100%'; height="80"></a>
           <button class="navbar-toggler blanco" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon blanco"></span>
           </button>
         </div>
         <div class="collapse navbar-collapse col-7 pb-0" id="navbarNav">
             <ul class="navbar-nav">
-              <li class="nav-item pe-5 mt-2 pb-0">
+              <li class="nav-item mt-2 pb-0">
                 <div class="dropdown nav-link bg-nav">
                   <a class="dropdown-toggle nav-link {{ Route::currentRouteName() == 'Reportes General' || Route::currentRouteName() == "Reportes Finalizados" 
-                  || Route::currentRouteName() == "Reportes Derivado a Soporte" || Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' ? 'active' : '' }}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    @if (Route::currentRouteName() == 'Reportes General' || Route::currentRouteName() == "Reportes Finalizados" || Route::currentRouteName() == "Reportes Derivado a Soporte" || Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico')
+                  || Route::currentRouteName() == "Reportes Derivado a Soporte" || Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' ? 'active' : '' || Route::currentRouteName() == 'Reportes Derivado a Tecnicos' ? : ''}}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @if (Route::currentRouteName() == 'Reportes General' || Route::currentRouteName() == "Reportes Finalizados" || Route::currentRouteName() == "Reportes Derivado a Soporte" || Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' || Route::currentRouteName() == 'Reportes Derivado a Tecnicos'
+                    || Route::currentRouteName() == 'Reportes Derivado a Clientes')
                       {{Route::current()->getName()}}
                     @else
                       Reportes
@@ -49,21 +51,31 @@
                     <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes General' ? 'active' : '' }}" aria-current="page" href="{{route('Reportes General')}}">Reportes General</a></li>
                     <li><a class="nav-link {{ Route::currentRouteName() == "Reportes Derivado a Soporte" ? 'active' : '' }}" href="{{route('Reportes Derivado a Soporte')}}">Reportes Derivado a Soporte</</li>
                     <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' ? 'active' : '' }}" href="{{route('Reportes Derivado a Jefe Tecnico')}}">Reportes Derivado a Jefe Tecnico</</li>
+                    <li><a class="nav-link {{ Route::currentRouteName() == "Reportes Derivados a Tecnicos" ? 'active' : '' }}" href="{{route('Reportes Derivado a Tecnicos')}}">Reportes Derivado a Tecnicos</</li>
+                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Clientes' ? 'active' : '' }}" href="{{route('Reportes Derivado a Clientes')}}">Reportes Derivado a Cliente</</li>
                     <li><a class="nav-link {{ Route::currentRouteName() == "Reportes Finalizados" ? 'active' : '' }}" href="{{route('Reportes Finalizados')}}">Reportes Finalizados</</li>
+                    
+                  
                   </ul>
                 </div>
                 
               </li>
-              <li class="nav-item pe-5 ps-5">
+              <li class="nav-item pe-5">
                 <a class="nav-link {{ Route::currentRouteName() == 'Agregar Reporte' ? 'active' : '' }}" href="{{route('Agregar Reporte')}}">Agregar Reporte</a>
               </li>
-              <li class="nav-item pe-5 ps-5 mt-3 pb-0">
+              <li class="nav-item pe-5 mt-3 pb-0">
                 @if(session('usuario')['TIPO'] != 'Tecnico')
                 <a class="nav-link {{ Route::currentRouteName() == "ODT'S" ? 'active' : '' }}" href="{{route("ODT'S")}}">ODT's</a>
                 @elseif(session('usuario')['TIPO'] = 'Tecnico')
                 <a class="nav-link {{ Route::currentRouteName() == "ODT'S Tecnicos" ? 'active' : '' }}" href="{{route("ODT'S Tecnicos")}}">Mis ODT's</a>
                 @endif
               </li>
+              @if(session('usuario')['TIPO'] != 'Tecnico' && session('usuario')['TIPO'] == 'Soporte' || session('usuario')['TIPO'] == 'Jefe Tecnico')
+              <li class="pe-5 mt-3">
+                
+                    <a class="nav-link {{ Route::currentRouteName() == "ODT'S Tecnicos" ? 'active' : '' }}" href="{{route("ODT'S Tecnicos")}}">Mis ODT's</a>
+              </li>
+              @endif
             </ul>
         </div>
         <div class="collapse navbar-collapse row g-0 col text-white" id="navbarNav">

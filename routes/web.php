@@ -48,6 +48,9 @@ Route::get('/agregar_reporte', [SUCURSALCONTROLLERS::class, 'index'])->name('Agr
 
 
 //REPORTE LISTAR
+//DERIVADO A JEFE TECNICO
+Route::get('/reportes/derivados/jefe/tecnicos',[HomeController::class, 'reportesJTecnico'])->name('Reportes Derivado a Jefe Tecnico')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+Route::get('/reportes/derivados/jefe/tecnicos',[REPORTESCONTROLLERS::class, 'reportesJTecnico'])->name('Reportes Derivado a Jefe Tecnico')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 //GENERAL
 Route::get('/reportes', [HomeController::class, 'listarTodosReportes'])->name('Reportes General');
 Route::get('/reportes', [REPORTESCONTROLLERS::class, 'mostrarAllReportes'])->name('Reportes General');
@@ -57,10 +60,16 @@ Route::get('/reportes/finalizados',[REPORTESCONTROLLERS::class, 'reportesFinaliz
 //DERIVADOS A SOPORTE
 Route::get('/reportes/derivados/soporte',[HomeController::class, 'reportesSoporte'])->name('Reportes Derivado a Soporte')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 Route::get('/reportes/derivados/soporte',[REPORTESCONTROLLERS::class, 'reportesSoporte'])->name('Reportes Derivado a Soporte')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
-//DERIVADO A JEFE TECNICO
-//DERIVADOS A SOPORTE
-Route::get('/reportes/derivados/jefe/tecnicos',[HomeController::class, 'reportesJTecnico'])->name('Reportes Derivado a Jefe Tecnico')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
-Route::get('/reportes/derivados/jefe/tecnicos',[REPORTESCONTROLLERS::class, 'reportesJTecnico'])->name('Reportes Derivado a Jefe Tecnico')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+
+
+//DERIVADO A TECNICOS
+Route::get('/reportes/derivados/tecnicos',[HomeController::class, 'reportesTecnico'])->name('Reportes Derivado a Tecnicos')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+Route::get('/reportes/derivados/tecnicos',[REPORTESCONTROLLERS::class, 'reportesTecnicos'])->name('Reportes Derivado a Tecnicos')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+
+//DERIVADO A CLIENTE
+Route::get('/reportes/derivados/clientes',[HomeController::class, 'reportesDClientes'])->name('Reportes Derivado a Clientes')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+Route::get('/reportes/derivados/clientes',[REPORTESCONTROLLERS::class, 'reportesDClientes'])->name('Reportes Derivado a Clientes')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+
 //DETALLE REPORTE
 Route::get('/detalle/reporte/{id}', [HomeController::class, 'detalleReporte'])->name('Detalle Reporte')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 Route::get('/detalle/reporte/{id}', [REPORTESCONTROLLERS::class, 'detalleReporte'])->name('Detalle Reporte')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
