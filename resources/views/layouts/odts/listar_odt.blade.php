@@ -81,8 +81,10 @@
                   @if($odt->Estado == 'F')
                     <a href="{{route('pdf_odt', $odt->ID_odt)}}" class="btn btn-danger text-white" title="Generar PDF"><i class="fa-solid fa-file-pdf"></i></i></a>
                   @endif
-                  
-                  
+
+                  @if(session('usuario')['TIPO'] == 'Jefe Tecnico')
+                  <a class="btn btn-info material-symbols-outlined text-white" title="Reasignar ODT" href="{{route('Reasignar ODT', $odt->ID_odt)}}">info</a> 
+                  @endif
                 </td>
                 @endforeach
     {{-- Aquí puedes iterar sobre la lista y mostrar los datos si es necesario --}}
@@ -95,7 +97,7 @@
     </div>
     @if($errors->any())
 
-       @if($errors->first() <> '1')                 
+       @if($errors->first() <> '1' && $errors->first() <> '2')                 
         <script>
             Swal.fire({
                 //customClass: {
@@ -108,7 +110,7 @@
                 confirmButtonColor: '#fcab00',
             })
         </script> 
-        @else
+        @elseif($errors->first() =='1')
         <script>
             Swal.fire({
                 //customClass: {
@@ -121,6 +123,19 @@
                 confirmButtonColor: '#fcab00',
             })
         </script>
+        @elseif($errors->first()=='2')
+        <script>
+          Swal.fire({
+              //customClass: {
+              //    confirmButton: 'swalBtnColor'
+              //},
+              title: 'Se reasignó!',
+              text: 'Orden de Trabajo reasignada correctamente!',
+              icon: 'success',
+              confirmButtonText: 'OK!',
+              confirmButtonColor: '#fcab00',
+          })
+      </script>
         @endif
                         
     @endif

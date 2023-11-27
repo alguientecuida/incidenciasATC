@@ -26,6 +26,11 @@
                                   @endif
                                 @endforeach
                               </h5>
+                              <h5>
+                                FECHA REPORTE:
+                                <b>{{ \Carbon\Carbon::parse($reporte->Fecha)->format('d-m-Y') }}
+                              </b></h5>
+
                             </div>
                         </div>
                     </div>
@@ -35,9 +40,11 @@
                         <div class="row">
                             <div class="col">
                               <h5>
-                                FECHA REPORTE:
-                                <b>{{ \Carbon\Carbon::parse($reporte->Fecha)->format('d-m-Y') }}
-                              </b></h5>
+                                Nombre Prioridad : <b>{{$empleado->NOMBRE}}</b>
+                              </h5>
+                              <h5>
+                                Numero Prioridad : <b>{{$empleado->CELULAR}}</b>
+                              </h5>
                             </div>
                         </div>
                     </div>
@@ -64,6 +71,9 @@
                         @elseif($ultimaAct->Estado == 'F')
                         <a class="btn btn-success">Finalizado</a>
                         @endif
+                      </h5>
+                      <h5>
+                        Direccion: <b>{{$reporte->sucursal->DIRECCION}}</b>
                       </h5>
                         <div class="row mt-1">
                             <div class="col">

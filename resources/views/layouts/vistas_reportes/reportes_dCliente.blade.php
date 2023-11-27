@@ -9,11 +9,10 @@
             <thead>
               <tr>
                 <th scope="col" data-ordenar="ID">ID</th>
+                <th scope="col">Fecha de reporte</th>
                 <th scope="col">Sucursal</th>
                 <th scope="col">Tipo de reporte</th>
                 <th scope="col">Estado</th>
-                <th scope="col">Usuario que reportó</th>
-                <th scope="col">Fecha de reporte</th>
                 <th scope="col">Fecha Actualización</th>
                 <th scope="col">Acciones</th>
 
@@ -32,6 +31,7 @@
               <tr class='text-center  table-danger'>
                 
                     <th scope="row">{{$reporte->ID_Reporte}}</th>
+                    <td>{{ \Carbon\Carbon::parse($reporte->Fecha)->format('d-m-Y') }}</td>
                     <td>{{ $reporte->sucursal->NOMBRE_SUCURSAL}}</td>
                    
                     <td>@foreach ($reporte->tipos_fallas as $indice => $falla)
@@ -43,8 +43,7 @@
                     @if($ultimaAct->Estado == 'DC')
                         <td>Derivado a Cliente</td>
                     @endif
-                    <td>{{$reporte->USUARIO->NOMBRE}}</td>
-                    <td>{{ \Carbon\Carbon::parse($reporte->Fecha)->format('d-m-Y') }}</td>
+
                     
                     <td>{{ \Carbon\Carbon::parse($ultimaAct->Fecha)->format('d-m-Y') }}</td>
                     <td><a class="btn btn-warning material-symbols-outlined text-white" title="Seguimiento" href="{{route('Detalle Reporte', $reporte->ID_Reporte)}}">

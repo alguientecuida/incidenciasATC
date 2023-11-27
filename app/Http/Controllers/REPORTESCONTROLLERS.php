@@ -13,6 +13,14 @@ use App\Models\ASIGNACION;
 use App\Models\ODT;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Http\Requests\CreateReporte;
+use App\Http\Requests\AddRevisionRequest;
+use App\Http\Requests\AssingODTRequest;
+use App\Models\BITACORA;
+use App\Models\EMPLEADO;
+use Illuminate\Support\Facades\Validator;
+
+
 
 class REPORTESCONTROLLERS extends Controller
 {
@@ -36,7 +44,7 @@ class REPORTESCONTROLLERS extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateReporte $request)
     {
         //
 
@@ -105,8 +113,8 @@ class REPORTESCONTROLLERS extends Controller
     {
         $reporte = REPORTE::find($id);
         $revision = REVISION::select('*')->where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->first();
-
-        return view('layouts.vistas_reportes.agregar_revision', ['reporte'=>$reporte, 'revision'=>$revision]);
+        $tecnicos = USUARIO::where('ESTADO', 'Activado')->where('TIPO', 'Tecnico')->orWhere('TIPO', 'Soporte')->orWhere('TIPO', 'Jefe Tecnico')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
+        return view('layouts.vistas_reportes.agregar_revision', ['reporte'=>$reporte, 'revision'=>$revision, 'tecnicos'=>$tecnicos]);
         //
     }
 
@@ -152,6 +160,13 @@ class REPORTESCONTROLLERS extends Controller
     public function mostrarAllReportes(){
         $reportes = REPORTE::all();
         $sucursales = SUCURSAL::all();
+        $reportesSoporte = REPORTE::select('reportes.*')
+        ->join('revisiones', function ($join) {
+            $join->on('reportes.ID_Reporte', '=', 'revisiones.ID_Reporte')
+                ->whereRaw('revisiones.Fecha = (SELECT MAX(Fecha) FROM revisiones WHERE ID_Reporte = reportes.ID_Reporte)')
+                ->where('revisiones.Estado', '=', 'DS');
+        })
+        ->get();
         //$revision = REVISION::select('Fecha', 'Estado')->where('ID_Reporte', $reportes->ID_Reporte)->orderBy('Fecha', 'desc')->first();
 
         return view('layouts.vistas_reportes.reportes_general', ['reportes' => $reportes, 'sucursales' => $sucursales]);
@@ -167,11 +182,13 @@ class REPORTESCONTROLLERS extends Controller
     public function detalleReporte($id){
         $reporte = REPORTE::find($id);
         $detalles = REVISION::select('*')->where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->get();
-        return view('layouts.vistas_reportes.detalle_reporte', ['reporte'=>$reporte, 'detalles'=>$detalles]);
+        $empleado = EMPLEADO::where('ID_SUCURSAL', $reporte->sucursal->ID)->where('NRO_EMERGENCIA', '1')->first();
+        return view('layouts.vistas_reportes.detalle_reporte', ['reporte'=>$reporte, 'detalles'=>$detalles, 'empleado'=>$empleado]);
         //dd($detalles);
     }
 
-    public function agregarRevision(Request $request, $id_rep){
+    public function agregarRevision(AddRevisionRequest $request, $id_rep){
+       
          // Obtiene la fecha y hora actual en Chile
          $fecha = Carbon::now('America/Santiago');
 
@@ -190,41 +207,44 @@ class REPORTESCONTROLLERS extends Controller
         $detalles = REVISION::where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->get();
 
         if($revision->Estado == 'DT'){
-            $tecnicos = USUARIO::where('ESTADO', 'Activado')->where('TIPO', 'Tecnico')->orWhere('TIPO', 'Soporte')->orWhere('TIPO', 'Jefe Tecnico')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
-            return view('layouts.odts.asignar_odt', ['tecnicos'=>$tecnicos, 'reporte'=>$reporte, ]);
+            $validator = Validator::make($request->all(), [
+                'Fecha_inicio' => 'required|date|after_or_equal:today',
+                'tecnico' => 'required',
+            ], [
+                'Fecha_inicio.after_or_equal' => 'La fecha de inicio no puede ser anterior a la fecha actual.',
+                'tecnico.required' => 'El campo técnico es obligatorio.',
+                'Fecha_inicio.required' => 'El campo de la Fecha de la visista es obligatorio'
+            ]);
+    
+            if ($validator->fails()) {
+                return back()
+                    ->withErrors($validator)
+                    ->withInput();
+            }
+            $ultimoodt = ODT::latest('ID_odt')->first();
+            $odt = new ODT();
+            $odt->Fecha_creacion = $fechaY;
+            $odt->Numero_odt = $ultimoodt ? $ultimoodt->Numero_odt + 1 : 1;
+            $odt->ID_usuario = session('usuario')['ID'];
+            $odt->Estado = 'A';
+            $odt->Fecha_inicio = $request->Fecha_inicio;
+            $odt->ID_sucursal = $reporte->ID_Sucursal;
+            $odt->Tipo_trabajo = 'MC';
+            $odt->ID_reporte = $id_rep;
+
+            $odt->save();
+
+            $asignacion = new ASIGNACION();
+            $asignacion->ID_odt = $odt->ID_odt;
+            $asignacion->ID_usuario = $request->tecnico;
+            $asignacion->Fecha = $fechaY;
+
+            $asignacion->save();
+            return redirect()->route("ODT'S")->withErrors('1');
         }else{
             return redirect()->route('Detalle Reporte', $reporte->ID_Reporte);
         }
         
-    }
-
-    public function crearODTRep(Request $request, $id_rep){
-        $reporte = REPORTE::find($id_rep);
-        // Obtiene la fecha y hora actual en Chile
-        $fecha = Carbon::now('America/Santiago');
-        // Puedes formatear la fecha y hora según tus necesidades
-        $fechaY = $fecha->format('Y-m-d H:i:s');
-        $ultimoodt = ODT::latest('ID_odt')->first();
-        $odt = new ODT();
-        $odt->Fecha_creacion = $fechaY;
-        $odt->Numero_odt = $ultimoodt ? $ultimoodt->Numero_odt + 1 : 1;
-        $odt->ID_usuario = session('usuario')['ID'];
-        $odt->Estado = 'A';
-        $odt->Fecha_inicio = $fechaY;
-        $odt->ID_sucursal = $reporte->ID_Sucursal;
-        $odt->Tipo_trabajo = 'MC';
-        $odt->ID_reporte = $id_rep;
-
-        $odt->save();
-
-        $asignacion = new ASIGNACION();
-        $asignacion->ID_odt = $odt->ID_odt;
-        $asignacion->ID_usuario = $request->tecnico;
-        $asignacion->Fecha = $fechaY;
-
-        $asignacion->save();
-
-        return redirect()->route("ODT'S")->withErrors('1');
     }
 
     public function reportesFinalizados(){

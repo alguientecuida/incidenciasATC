@@ -55,16 +55,14 @@
                   {{$asignacion->NOMBRE}}@endforeach
                 </td>          
                 <td>@if($odt->Estado == "A") Asignada
+                  @elseif($odt->Estado == "EC") En Camino
                   @elseif($odt->Estado == "EP") En Proceso
                   @elseif($odt->Estado == "P") Pospuesto
                   @elseif($odt->Estado == "F") Finalizada
                 @endif</td>
                 <td>
-                    @if($odt->Estado != 'A')
                         {{ \Carbon\Carbon::parse($odt->Fecha_inicio)->format('d-m-Y') }}
-                    @elseif($odt->Estado == 'A')
-                        -
-                    @endif
+                    
                 </td>
                 <td>
                     @if($odt->Estado != 'F')
@@ -78,8 +76,12 @@
                   <a class="btn btn-warning text-white" title="Revisar Reporte de ODT" href="{{route('Detalle Reporte', $odt->ID_reporte)}}"><i class="fa-solid fa-info"></i></a> 
                   @endif
                   @if($odt->Estado == 'A')
+                    <a class="btn btn-primary text-white" title="Cambiar estado EN CAMINO" href="{{route('en.camino', $odt->ID_odt)}}">
+                      <i class="fa-solid fa-truck-fast"></i>
+                    </a>
+                  @elseif($odt->Estado == 'EC')
                     <a class="btn btn-info text-white" title="Cambiar estado EN PROCESO" href="{{route('cambiar.proceso', $odt->ID_odt)}}">
-                        <i class="fa-regular fa-circle-play"></i>
+                      <i class="fa-regular fa-circle-play"></i>
                     </a>
                   @elseif($odt->Estado == 'EP')
                     <a class="btn btn-success text-white" title="Cambiar estado FINALIZADO" href="{{route("Cerrar ODT", $odt->ID_odt)}}">

@@ -35,10 +35,10 @@
 
                     <label for="nombre_contacto">Ingrese el nombre de la perosna que lo recibió</label>
                     <div>
-                    <input type="text" name="nombre_contacto" id="nombre_contacto" class="form-control text-center" placeholder="Nombre de la persona que lo recibió">
+                    <input type="text" name="nombre_contacto" id="nombre_contacto" class="form-control text-center" value="{{$empleado->NOMBRE}}">
                     </div>
                     <label for="numero_contacto">Ingrese el numero de celular de la persona que lo recibió</label>
-                    <input type="text" class="form-control text-center" name="numero_contacto" id="numero_contacto" placeholder="912345678">
+                    <input type="text" class="form-control text-center" name="numero_contacto" id="numero_contacto" value="{{$empleado->CELULAR}}">
                 </div>
 
                 <div class="card-footer">

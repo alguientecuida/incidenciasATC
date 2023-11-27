@@ -4,35 +4,21 @@
 
 <div class='container-fluid'>
     <div class="row mt-2 me-5">
-        <div class="col">
-
-          </div>
-          <div class="col-md-auto">
-
-          </div>
-          <div class="col col-lg-2 mt-1 me-5 pe-5">
-            <h5>Filtrar por sucursal:</h5>
-            <select class="js-example-basic-single" name="sucursal" placeholder='Seleccionar sucursal'>
-                <option value=""  selected style="display;">Elegir una opción</option>
-                @foreach($sucursales as $sucursal)
-                    <option value="{{ $sucursal->ID }}">{{ $sucursal->NOMBRE_SUCURSAL }}</option>
-                @endforeach
-            </select>
-          </div>
+        
+          
+          
         </div>      
         
-    </div>
     <div class='col'></div>
     <div class='col m-5'>
-        <table id="reportes" class="table table-striped text-center" style="width:100%">
+        <table id="reportes" class="table text-center" style="width:100%">
             <thead>
               <tr>
                 <th scope="col" data-ordenar="ID">ID</th>
+                <th scope="col">Fecha de reporte</th>
                 <th scope="col">Sucursal</th>
                 <th scope="col">Tipo de reporte</th>
                 <th scope="col">Estado</th>
-                <th scope="col">Usuario que reportó</th>
-                <th scope="col">Fecha de reporte</th>
                 <th scope="col">Fecha Actualización</th>
                 <th scope="col">Acciones</th>
 
@@ -65,8 +51,8 @@
                 @endif'>
                 
                     <th scope="row">{{$reporte->ID_Reporte}}</th>
+                    <td>{{ \Carbon\Carbon::parse($reporte->Fecha)->format('d-m-Y') }}</td>
                     <td>{{ $reporte->sucursal->NOMBRE_SUCURSAL}}</td>
-                   
                     <td>@foreach ($reporte->tipos_fallas as $indice => $falla)
                         {{ $falla->tipo }}
                         @if ($indice !== count($reporte->tipos_fallas) - 1)
@@ -88,15 +74,10 @@
                     @elseif($ultimaAct->Estado == 'F')
                         <td>Finalizado</td>
                     @endif
-                    <td>{{$reporte->USUARIO->NOMBRE}}</td>
-                    <td>{{ \Carbon\Carbon::parse($reporte->Fecha)->format('d-m-Y') }}</td>
                     
                     <td>{{ \Carbon\Carbon::parse($ultimaAct->Fecha)->format('d-m-Y') }}</td>
                     <td><a class="btn btn-warning material-symbols-outlined text-white" title="Seguimiento" href="{{route('Detalle Reporte', $reporte->ID_Reporte)}}">
                         info</a> 
-                        <a type="button" title="Seguimiento" class="btn btn-success material-symbols-outlined text-white" href="{{route('Agregar Revisión', $reporte->ID_Reporte)}}">
-                            rate_review
-                        </a></td>
                 @endif
                 @endforeach
             
@@ -125,10 +106,12 @@
                 
             </div>
           </div>
-          
-        
-          
-    </div>
+    </div>         
+</div>
+
+@if(session('usuario')['TIPO'] == 'Soporte')
+
+@endif
     @if($errors->any())
 
        @if($errors->first() <> '1')                 

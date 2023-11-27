@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\USUARIO;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\ODT; 
+use App\Models\EMPLEADO;
 class HomeController extends Controller
 {
     //INCIO DE SESION:
@@ -65,7 +66,9 @@ class HomeController extends Controller
 
     public function cerrarODT($id){
         $id = $id;
-        return view('layouts.odts.cerrar_odt', ['id'=>$id]);
+        $odt = ODT::find($id);
+        $empleado = EMPLEADO::where('ID_SUCURSAL', $odt->sucursal->ID)->where('NRO_EMERGENCIA', '1')->first();
+        return view('layouts.odts.cerrar_odt', ['id'=>$id, 'empleado'=>$empleado]);
     }
 
     public function reportesTecnicos(){
@@ -74,5 +77,10 @@ class HomeController extends Controller
 
     public function reportesDCliente(){
         return view('layouts.vistas_reportes.reportes_dCliente');
+    }
+
+    public function reasignarODT($id){
+        $id = $id;
+        return view('layouts.odts.reasignar_odt', ['id' => $id]);
     }
 }

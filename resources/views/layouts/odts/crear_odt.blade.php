@@ -10,6 +10,16 @@
         <div class="row">
             <div class="col"></div>
             <div class="container col m-3">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <p>Por favor solucione los siguientes problemas</p>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error}}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="card text-center">
                     <div class="card-header">
                       <h3>Crear ODT</h3>

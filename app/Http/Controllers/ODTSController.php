@@ -20,6 +20,7 @@ use Illuminate\Support\Str;
 use App\Models\CLIENTE;
 use App\Models\EMPLEADO;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Http\Requests\CreateODTRequest;
 
 
 class ODTSController extends Controller
@@ -62,17 +63,28 @@ class ODTSController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ODT $oDT)
+    public function edit($id_odt)
     {
         //
+        $odt = ODT::find($id_odt);
+        $asignacion = ASIGNACION::where('ID_odt', $odt->ID_odt)->first();
+        $tecnicos = USUARIO::where('ESTADO', 'Activado')->where('TIPO', 'Tecnico')->orWhere('TIPO', 'Soporte')->orWhere('TIPO', 'Jefe Tecnico')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
+        return view('layouts.odts.reasignar_odt', ['odt' => $odt, 'asignacion'=>$asignacion, 'tecnicos' => $tecnicos]);
+        //return dd($odt, $asignacion);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ODT $oDT)
+    public function update(Request $request, $ID_asignacion)
     {
         //
+        $asignacion = ASIGNACION::find($ID_asignacion);
+        $asignacion->ID_usuario = $request->tecnico;
+
+        $asignacion->save();
+
+        return redirect()->route("ODT'S")->withErrors('2');
     }
 
     /**
@@ -214,7 +226,7 @@ class ODTSController extends Controller
     
    }
 
-   public function generarODT(Request $request){
+   public function generarODT(CreateODTRequest $request){
     $fecha = Carbon::now('America/Santiago');
     // Puedes formatear la fecha y hora según tus necesidades
     $fechaY = $fecha->format('Y-m-d H:i:s');
@@ -224,7 +236,7 @@ class ODTSController extends Controller
     $odt->Numero_odt = $ultimoodt ? $ultimoodt->Numero_odt + 1 : 1;
     $odt->ID_usuario = session('usuario')['ID'];
     $odt->Estado = 'A';
-    $odt->Fecha_inicio = $fechaY;
+    $odt->Fecha_inicio = $request->Fecha_inicio;
     $odt->ID_sucursal = $request->sucursal;
     $odt->Tipo_trabajo = $request->trabajo;
 
@@ -238,5 +250,14 @@ class ODTSController extends Controller
     $asignacion->save();
 
     return redirect()->route("ODT'S");
+   }
+
+   public function estadoEnCamino($id){
+    $odt = ODT::find($id);
+
+    $odt->Estado = 'EC';
+
+    $odt->save();
+    return back()->withErrors('2');
    }
 }

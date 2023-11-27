@@ -81,10 +81,6 @@ Route::post('/agregar/revision/listo/{id}', [REPORTESCONTROLLERS::class, 'agrega
 
 //ODTS:
 
-//ASIGANAR ODT A TECNICOS
-Route::get('/asignar/odt', [HomeController::class, 'asignarODT'])->name('Asignar ODT')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
-//POST PARA ASIGNAR ODT
-Route::post('/asignar/odt/generando/{id}', [REPORTESCONTROLLERS::class, 'crearODTRep'])->name('asignar.odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 //LISTAR ODT
 Route::get('/odts', [HomeController::class, 'listarODTS'])->name("ODT'S")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']); 
 Route::get('/odts', [ODTSController::class, 'index'])->name("ODT'S")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
@@ -97,6 +93,10 @@ Route::post('/generar/odt/sin/reporte', [ODTSController::class, 'generarODT'])->
 Route::get('/odts/tecnicos', [HomeController::class, 'listarODTSTecnicos'])->name("ODT'S Tecnicos")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']); 
 Route::get('/odts/tecnicos', [ODTSController::class, 'ODTsTecnicos'])->name("ODT'S Tecnicos")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
+
+//ODTS EN CAMINO
+Route::get('/odt/cambio/estado/enCamino/{id}', [ODTSController::class, 'estadoEnCamino'])->name('en.camino')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
+
 //ODTS CAMBIAR EN PROCESO
 Route::get('/odts/cambio/estado/{id}', [ODTSController::class, 'estadoEnProceso'])->name("cambiar.proceso")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
@@ -105,6 +105,11 @@ Route::get('/odt/cerrar/{id}', [HomeController::class, 'cerrarODT'])->name('Cerr
 Route::post('/odt/cerrar/imagenes/{id}', [ODTSController::class, 'imagenODT'])->name('guardar.imagen')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 Route::post('/odt/cerrar/detalle/{id}', [ODTSController::class, 'cerrarODT'])->name('cerrar.odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
+
+//ACTUALIZAR ASIGNACION ODT:
+Route::get('/odt/reasignar/{id}', [ODTSController::class, 'edit'])->name('Reasignar ODT')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
+//Route::get('/odt/reasignar/{id}', [HomeController::class, 'reasignarODT'])->name('Reasignar ODT')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
+Route::post('/odt/reasignando/{id}', [ODTSController::class, 'update'])->name('reasignar.odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
 //PRUEBA RELACIONES
 Route::get('/relaciones', [REPORTESCONTROLLERS::class, 'relaciones']);

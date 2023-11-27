@@ -10,6 +10,16 @@
         <div class="row">
             <div class="col"></div>
             <div class="container col m-3">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <p>Por favor solucione los siguientes problemas</p>
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error}}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="card text-center">
                     <div class="card-header">
                       <h3>Agregar Reporte</h3>
@@ -43,6 +53,7 @@
                     <div class="card-footer text-body-secondary">
                         <button id="registrar-btn" class="btn btn-warning text-center" type="submit">Crear reporte</button>
                     </div>
+                    
                     </form>
                 </div>
             </div>
@@ -52,6 +63,8 @@
         </div>
     </div>
 </body>
+
+
 
 @endsection
 
@@ -64,5 +77,28 @@
 
         $('.js-example-basic-multiple').select2({
         });
+    </script>
+    <script>
+        history.pushState(null, null, window.location.href);
+            window.onpopstate = function () {
+                history.go(1);
+            };
+    </script>}
+    <script>
+        window.addEventListener('beforeunload', function (event) {
+            // Cancelar el evento de descarga (mostrar la confirmación al usuario)
+            event.preventDefault();
+            // Mensaje que se mostrará al usuario
+            var confirmationMessage = '¿Seguro que deseas abandonar la página? Los cambios no se guardarán.';
+            // Establecer el mensaje en algunos navegadores
+            event.returnValue = confirmationMessage;
+            // Devolver el mensaje en otros navegadores
+            return confirmationMessage;
+        });
+    
+        // Función para desvincular el evento beforeunload si el formulario se envía
+        function handleFormSubmit() {
+            window.removeEventListener('beforeunload', beforeUnloadHandler);
+        }
     </script>
 @stop

@@ -27,7 +27,7 @@
   </head>
   <header>
     <nav class="navbar navbar-expand-lg bg-nav center">
-        <div class="container-fluid">
+      <div class="container-fluid">
             <a href="{{route('Reportes General')}}"><img src="{{asset('img/LOGO.png')}}" alt="Alguien Te Cuida" max-width= '100%'; height="80"></a>
           <button class="navbar-toggler blanco" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon blanco"></span>
@@ -78,13 +78,13 @@
               @endif
             </ul>
         </div>
-        <div class="collapse navbar-collapse row g-0 col text-white" id="navbarNav">
-            @if (session('usuario'))
+        <div class="navbar-collapse row g-0 col text-white" id="navbarNav">
+
                     Sesion de: {{session('usuario')['NOMBRE']}} <br>
                     Permisos como: {{session('usuario')['TIPO']}}
-                    <a href="{{ route('logout') }}" class='blanco nav-link'>Cerrar Sesión</a>
                     
-            @endif
+                    <a href="{{ route('logout')}}" class='blanco nav-link' style='display: inline !important;'>Cerrar Sesión</a>
+
         </div>
       </nav>
   </header>
