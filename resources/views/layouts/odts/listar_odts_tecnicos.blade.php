@@ -72,9 +72,9 @@
                     @endif
                 </td>
                 <td>
-                  @if($odt->ID_reporte != NULL)
-                  <a class="btn btn-warning text-white" title="Revisar Reporte de ODT" href="{{route('Detalle Reporte', $odt->ID_reporte)}}"><i class="fa-solid fa-info"></i></a> 
-                  @endif
+                  
+                  <a class="btn btn-warning text-white" title="Revisar detalle de ODT" href="{{route('Detalle ODT', $odt->ID_odt)}}"><i class="fa-solid fa-info"></i></a> 
+                  
                   @if($odt->Estado == 'A')
                     <a class="btn btn-primary text-white" title="Cambiar estado EN CAMINO" href="{{route('en.camino', $odt->ID_odt)}}">
                       <i class="fa-solid fa-truck-fast"></i>
@@ -90,7 +90,7 @@
                   @endif
 
                   @if($odt->Estado == 'F')
-                    <a href="{{route('pdf_odt', $odt->ID_odt)}}" class="btn btn-danger text-white" title="Generar PDF"><i class="fa-solid fa-file-pdf"></i></i></a>
+                    <a href="{{route('Detalle ODT', $odt->ID_odt)}}" class="btn btn-danger text-white" title="Generar PDF"><i class="fa-solid fa-file-pdf"></i></i></a>
                   @endif
                   
                 </td>

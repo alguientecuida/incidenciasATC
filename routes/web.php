@@ -24,9 +24,9 @@ use App\Http\Middleware\Encargado;
 //RUTA QUE GENERA EL PDF
 Route::get('/odt/generar/pdf/{id}', [ODTSController::class, 'generarPDF'])->name('pdf_odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
-Route::get('/', function () {
-    return USUARIO::all();
-});
+//Route::get('/', function () {
+//    return USUARIO::all();
+//});
 
 
 //RUTAS DE PAGINA
@@ -52,8 +52,8 @@ Route::get('/agregar_reporte', [SUCURSALCONTROLLERS::class, 'index'])->name('Agr
 Route::get('/reportes/derivados/jefe/tecnicos',[HomeController::class, 'reportesJTecnico'])->name('Reportes Derivado a Jefe Tecnico')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 Route::get('/reportes/derivados/jefe/tecnicos',[REPORTESCONTROLLERS::class, 'reportesJTecnico'])->name('Reportes Derivado a Jefe Tecnico')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 //GENERAL
-Route::get('/reportes', [HomeController::class, 'listarTodosReportes'])->name('Reportes General');
-Route::get('/reportes', [REPORTESCONTROLLERS::class, 'mostrarAllReportes'])->name('Reportes General');
+Route::get('/reportes', [HomeController::class, 'listarTodosReportes'])->name('Reportes General')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+Route::get('/reportes/buscar', [REPORTESCONTROLLERS::class, 'mostrarAllReportes'])->name('reportes.buscar')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 //FINALIZADOS
 Route::get('/reportes/finalizados',[HomeController::class, 'reportesFinalizados'])->name('Reportes Finalizados')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 Route::get('/reportes/finalizados',[REPORTESCONTROLLERS::class, 'reportesFinalizados'])->name('Reportes Finalizados')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
@@ -61,6 +61,9 @@ Route::get('/reportes/finalizados',[REPORTESCONTROLLERS::class, 'reportesFinaliz
 Route::get('/reportes/derivados/soporte',[HomeController::class, 'reportesSoporte'])->name('Reportes Derivado a Soporte')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 Route::get('/reportes/derivados/soporte',[REPORTESCONTROLLERS::class, 'reportesSoporte'])->name('Reportes Derivado a Soporte')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 
+//REPORTES LOCALES
+Route::get('/reportes/locales', [HomeController::class, 'reportesLocales'])->name('Reportes Locales')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+Route::get('/reportes/locales', [REPORTESCONTROLLERS::class, 'reportesLocales'])->name('Reportes Locales')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 
 //DERIVADO A TECNICOS
 Route::get('/reportes/derivados/tecnicos',[HomeController::class, 'reportesTecnico'])->name('Reportes Derivado a Tecnicos')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
@@ -69,6 +72,11 @@ Route::get('/reportes/derivados/tecnicos',[REPORTESCONTROLLERS::class, 'reportes
 //DERIVADO A CLIENTE
 Route::get('/reportes/derivados/clientes',[HomeController::class, 'reportesDClientes'])->name('Reportes Derivado a Clientes')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
 Route::get('/reportes/derivados/clientes',[REPORTESCONTROLLERS::class, 'reportesDClientes'])->name('Reportes Derivado a Clientes')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+//FALLA LOCAL
+Route::get('/repostes/falla/local', [HomeController::class, 'reportesLocales'])->name('Reportes Locales')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+Route::get('/repostes/falla/local', [REPORTESCONTROLLERS::class, 'reportesLocales'])->name('Reportes Locales')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+//FINALIZAR FALLA LOCAL
+Route::post('/reportes/falla/local/finalizar/{id}', [REPORTESCONTROLLERS::class, 'localTerminado'])->name('finalizar_reporte')->middleware(['S:Soporte,Administracion']);
 
 //DETALLE REPORTE
 Route::get('/detalle/reporte/{id}', [HomeController::class, 'detalleReporte'])->name('Detalle Reporte')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
@@ -86,8 +94,14 @@ Route::get('/odts', [HomeController::class, 'listarODTS'])->name("ODT'S")->middl
 Route::get('/odts', [ODTSController::class, 'index'])->name("ODT'S")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
 //CREAR ODT
-Route::get('/crear/odt', [ODTSController::class, 'crearODT'])->name("Crear ODT")->middleware(['S:Jefe Tecnico']);
-Route::post('/generar/odt/sin/reporte', [ODTSController::class, 'generarODT'])->name('crear.odt')->middleware(['S:Jefe Tecnico']);
+Route::get('/crear/odt', [ODTSController::class, 'crearODT'])->name("Crear ODT")->middleware(['S:Jefe Tecnico,Administracion']);
+Route::post('/crear/odt/imagenes/{id}', [ODTSController::class, 'imagenIndODT'])->name('guardar.imagenInd')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
+Route::post('/generar/odt/sin/reporte', [ODTSController::class, 'generarODT'])->name('crear.odt')->middleware(['S:Jefe Tecnico,Administracion']);
+
+
+//DETALLE DE ODT
+Route::get('/odts/detalle/{id}', [ODTSController::class, 'detalleOdt'])->name("Detalle ODT")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
+
 
 //ODTS POR TECNICO
 Route::get('/odts/tecnicos', [HomeController::class, 'listarODTSTecnicos'])->name("ODT'S Tecnicos")->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']); 
@@ -112,13 +126,15 @@ Route::get('/odt/reasignar/{id}', [ODTSController::class, 'edit'])->name('Reasig
 Route::post('/odt/reasignando/{id}', [ODTSController::class, 'update'])->name('reasignar.odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
 //PRUEBA RELACIONES
-Route::get('/relaciones', [REPORTESCONTROLLERS::class, 'relaciones']);
+//Route::get('/relaciones', [REPORTESCONTROLLERS::class, 'relaciones']);
 
-
+//Route::get('/puebaEmail', [REPORTESCONTROLLERS::class, 'pruebaEmail']);
 //PRUEBA GENERAR NUMERO DE TICKET ALEATORIO
 
 //Route::get('/prueba',[REPORTESCONTROLLERS::class, 'TICKETS']);
 
+//PRUEBA ULTIMA ID ODT
+//Route::get('/pruebaIDODT', [ODTSController::class, 'pruebaID']);
 
 
 

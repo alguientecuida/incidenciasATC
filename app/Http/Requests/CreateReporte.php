@@ -25,7 +25,7 @@ class CreateReporte extends FormRequest
     {
         return [
             //
-            'sucursal' => 'required',
+            
             'tipos' => 'required',
             'observacion' => 'required'
         ];
@@ -33,7 +33,6 @@ class CreateReporte extends FormRequest
 
     public function messages(){
         return [
-            'sucursal.required' => 'Debe de seleccionar una sucursal.',
             'tipos.required' => 'Por lo menos debe de seleccionar una falla.',
             'observacion.required' => 'La observación es obligatorio.'
         ];

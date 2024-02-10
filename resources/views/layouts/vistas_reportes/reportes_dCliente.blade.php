@@ -69,17 +69,11 @@
                 <span id="mostrandoInfo"></span>
             </div>
 
-            <div id="paginacion" class="col-4">
-                <label for="elementosPorPagina">Elementos por página:</label>
-                <select id="elementosPorPagina">
-                    <option value="5">20</option>
-                    <option value="10">50</option>
-                    <option value="20">100</option>
-                </select>
-                <button id="anterior">Anterior</button>
-                <button id="siguiente">Siguiente</button>
-                
-            </div>
+            <nav>
+              <ul class="pagination" id="paginacionTabla">
+                  <!-- Los ítems de paginación se generarán dinámicamente aquí -->
+              </ul>
+            </nav>
           </div>
           
         
@@ -106,6 +100,44 @@
 
 </div>
 
+<script>
+  // Función para actualizar la paginación de la tabla
+  function actualizarPaginacionTabla() {
+      var itemsPorPagina = 20; // Número de filas por página
+      var tabla = $("#reportes");
+      var paginacionTabla = $("#paginacionTabla");
 
+      var numFilas = tabla.find("tbody tr").length;
+      var numPaginas = Math.ceil(numFilas / itemsPorPagina);
+
+      // Oculta todas las filas y muestra solo las de la primera página
+      tabla.find("tbody tr").hide();
+      tabla.find("tbody tr").slice(0, itemsPorPagina).show();
+
+      // Genera dinámicamente los ítems de paginación
+      paginacionTabla.empty();
+      for (var i = 1; i <= numPaginas; i++) {
+          paginacionTabla.append('<li class="page-item"><a class="page-link" href="#">' + i + '</a></li>');
+      }
+
+      // Lógica de cambio de página
+      paginacionTabla.find("li").on("click", function () {
+          var paginaActual = parseInt($(this).text());
+
+          // Oculta todas las filas y muestra solo las de la página seleccionada
+          tabla.find("tbody tr").hide();
+          tabla.find("tbody tr").slice((paginaActual - 1) * itemsPorPagina, paginaActual * itemsPorPagina).show();
+
+          // Marca como activa la página seleccionada
+          $(this).addClass("active").siblings().removeClass("active");
+      });
+  }
+
+  // Llamada inicial
+  $(document).ready(function () {
+      // Después de cargar los datos, actualiza la paginación de la tabla
+      actualizarPaginacionTabla();
+  });
+</script>
 
 @endsection

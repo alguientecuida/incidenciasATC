@@ -21,6 +21,9 @@ use App\Models\CLIENTE;
 use App\Models\EMPLEADO;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Http\Requests\CreateODTRequest;
+use Illuminate\Support\Facades\Validator;
+use App\Notifications\InvoicePaid;
+use App\Notifications\MailVT;
 
 
 class ODTSController extends Controller
@@ -81,8 +84,20 @@ class ODTSController extends Controller
         //
         $asignacion = ASIGNACION::find($ID_asignacion);
         $asignacion->ID_usuario = $request->tecnico;
-
+        $odt = ODT::find($asignacion->ID_odt);
         $asignacion->save();
+
+        $data = [
+            'Estado' => 'R',
+            'tecnico' => $request->tecnico,
+
+        ];
+        $data2 = 'R';
+
+        $tecnico = USUARIO::find($request->tecnico);
+        $recipient = SUCURSAL::find($odt->ID_sucursal);
+        $recipient->notify(new MailVT($data));
+        $tecnico->notify(new UpdateReports($data2));
 
         return redirect()->route("ODT'S")->withErrors('2');
     }
@@ -124,7 +139,11 @@ class ODTSController extends Controller
     $odt->Fecha_inicio = $fechaY;
 
     $odt->save();
-
+    $data = [
+        'Estado' => $odt->Estado
+    ];
+    $recipient = SUCURSAL::find($odt->ID_sucursal);
+    $recipient->notify(new MailVT($data));
     $odts = ODT::select('ODTS.*')
     ->join('ASIGNACIONES', 'ODTS.ID_odt', '=', 'ASIGNACIONES.ID_odt')
     ->join('USUARIOS', 'ASIGNACIONES.ID_usuario', '=', 'USUARIOS.ID')
@@ -133,7 +152,7 @@ class ODTSController extends Controller
     return redirect()->route("ODT'S Tecnicos", ['odts' => $odts])->withErrors('2');
    }
 
-//SUBIR IMAGENES
+//SUBIR IMAGENES CIERRE DE ODT
    public function imagenODT(Request $request, $id_odt){
 
     $request->validate([
@@ -159,7 +178,8 @@ class ODTSController extends Controller
 
     IMAGEN_ODT::create([
         'url' => '/storage/imagenesODT/' . $nombre,
-        'ID_odt' => $id_odt
+        'ID_odt' => $id_odt,
+        'cerrada'=> 'Y'
     ]);
    }
 
@@ -194,6 +214,14 @@ class ODTSController extends Controller
             ->join('USUARIOS', 'ASIGNACIONES.ID_usuario', '=', 'USUARIOS.ID')
             ->where('USUARIOS.ID', '=', session('usuario')['ID'])
             ->get();
+            $data = [
+                'Estado' => $odt->Estado,
+                'nombre_recibe' => $odt->persona_contacto,
+                'fecha' => $odt->Fecha_cierre
+            ];
+    
+            $recipient = SUCURSAL::find($odt->ID_sucursal);
+            $recipient->notify(new MailVT($data));
         return redirect()->route("ODT'S Tecnicos", ['odts' => $odts])->withErrors('3');
     }else{
 
@@ -204,6 +232,15 @@ class ODTSController extends Controller
             ->join('USUARIOS', 'ASIGNACIONES.ID_usuario', '=', 'USUARIOS.ID')
             ->where('USUARIOS.ID', '=', session('usuario')['ID'])
             ->get();
+        $data = [
+            'Estado' => $odt->Estado,
+            'nombre_recibe' => $odt->persona_contacto,
+            'fecha' => $odt->Fecha_cierre
+        ];
+
+        $recipient = SUCURSAL::find($odt->ID_sucursal);
+        $recipient->notify(new MailVT($data));
+         
         return redirect()->route("ODT'S Tecnicos", ['odts' => $odts])->withErrors('3');
     }
    }
@@ -213,7 +250,7 @@ class ODTSController extends Controller
     $sucursal = SUCURSAL::where('ID', $odt->ID_sucursal)->get();
     $cliente = CLIENTE::find($odt->sucursal->ID_CLIENTE);
     $empleado = EMPLEADO::where('ID_SUCURSAL', $odt->sucursal->ID)->where('NRO_EMERGENCIA', '1')->first();
-    $imagenes = IMAGEN_ODT::select('url')->where('ID_odt', $id)->get();
+    $imagenes = IMAGEN_ODT::select('url')->where('ID_odt', $id)->where('cerrada', 'Y')->get();
     $rutasImagenes = $imagenes->pluck('url')->map(function ($url) {
         return public_path($url);
     })->toArray();
@@ -239,6 +276,7 @@ class ODTSController extends Controller
     $odt->Fecha_inicio = $request->Fecha_inicio;
     $odt->ID_sucursal = $request->sucursal;
     $odt->Tipo_trabajo = $request->trabajo;
+    $odt->detalle_trabajo = $request->observacion;
 
     $odt->save();
 
@@ -247,17 +285,102 @@ class ODTSController extends Controller
     $asignacion->ID_usuario = $request->tecnico;
     $asignacion->Fecha = $fechaY;
 
-    $asignacion->save();
+    $recipient_client = SUCURSAL::find($request->sucursal);
+            if($request->tecnico != 'TE'){
+                $data_client = [
+                    'Estado' => $odt->Estado,
+                    'tipo' => $odt->Tipo_trabajo,
+                    'fecha' => $odt->Fecha_inicio,
+                    'tecnico' => $request->tecnico,
+                    'externo' => 'no'
+                ];
+            }else{
+                $data_client = [
+                    'Estado' => $odt->Estado,
+                    'tipo' => $odt->Tipo_trabajo,
+                    'fecha' => $odt->Fecha_inicio,
+                    'tecnico' => $request->tecnico,
+                    'externo' => 'si'
+                ];
+            }
+            $recipient_client->notify(new MailVT($data_client));
+            $recipient = USUARIO::find($request->tecnico);
+            $data = 'DT';
+            
+            $recipient->notify(new UpdateReports($data)); 
+    //$asignacion->save();
+    if ($request->has('imagen')) {
+        // Obtener el valor de ID_odt
+        //$id_odt = $request->input('ID_odt');
 
-    return redirect()->route("ODT'S");
+        // Redireccionar a otra página con el valor de ID_odt
+        return view('layouts.odts.cargar_imagenesODT', ['ID_odt' => $odt->ID_odt]);
+    } else {
+        // Si el checkbox no está marcado, hacer otra acción
+        // Por ejemplo, redireccionar a una página de error o realizar otra acción
+        return redirect()->route("ODT'S");
+    }
+    
    }
 
    public function estadoEnCamino($id){
     $odt = ODT::find($id);
 
     $odt->Estado = 'EC';
-
+    $data = [
+        'Estado' => $odt->Estado
+    ];
     $odt->save();
+
+    $recipient = SUCURSAL::find($odt->ID_sucursal);
+    $recipient->notify(new MailVT($data));
     return back()->withErrors('2');
    }
+
+
+   public function detalleOdt($id_odt){
+    $odt = ODT::find($id_odt);
+    $imagenes = IMAGEN_ODT::select('url')->where('ID_odt', $id_odt)->get();
+    $rutasImagenes = $imagenes->pluck('url')->toArray();
+    $empleado = EMPLEADO::where('ID_SUCURSAL', $odt->sucursal->ID)->where('NRO_EMERGENCIA', '1')->first();
+
+    //return $rutasImagenes;
+    return view('layouts.odts.detalle_odt', ['odt'=>$odt, 'empleado'=>$empleado, 'imagenes' => $rutasImagenes]);
+    //dd($revisiones);
+}
+//CARGAR IMAGEN A LA ASIGNACION ODT
+public function imagenIndODT(Request $request, $ID_odt){
+
+    $request->validate([
+        'file' => 'required|image'
+    ]);
+        /*$imagenes = $request->file('file')->store('public/imagenesODT');
+        $url = Storage::url($imagenes);
+
+        /*IMAGEN_ODT::create([
+            'url' => $url,
+            'ID_odt' => $id_odt
+        ]);*/
+
+    $request->validate([
+        'file' => 'required|image'
+    ]);
+    $nombre = Str::random(10) . $request->file('file')->getClientOriginalName();
+    $ruta = storage_path() . '\app\public\imagenesODT/' . $nombre;
+    Image::make($request->file('file'))->resize(400, null, function ($constraint) {
+        $constraint->aspectRatio();
+    })->save($ruta);
+
+    IMAGEN_ODT::create([
+        'url' => '/storage/imagenesODT/' . $nombre,
+        'ID_odt' => $ID_odt,
+        'cerrada'=> 'N'
+    ]);
+   }
+
+   public function pruebaID(){
+    return ODT::max('ID_odt')+1;
+   }
+
+
 }

@@ -3,15 +3,19 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Relations\BelongTo;
 
 
+
 class USUARIO extends Authenticable
 {
+    
     use HasFactory;
+    use Notifiable;
     protected $table = 'USUARIOS';
     protected $fillable = [
         'USUARIO', 'NOMBRE', 'CONTRASE', 'PASS_HASH', 'TIPO'
@@ -35,5 +39,9 @@ class USUARIO extends Authenticable
 
     public function odtAsig(){
         return $this->belongsToMany(ODT::class,'ASIGNACIONES','ID','ID_odt');
+    }
+    public function routeNotificationForMail()
+    {
+        return $this->CORREO; // Reemplaza 'email_personalizado' con el nombre real de la columna que contiene las direcciones de correo electrónico en tu tabla
     }
 }

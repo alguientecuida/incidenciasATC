@@ -91,9 +91,12 @@
                         <p>Técnico a cual asignara ODT:</p>
                         <select name="tecnico" id="tecnico" class="js-example-basic-single" disabled>
                             <option value="" disabled selected style="display:none;">Elegir una opción</option>
+                            
+
                             @foreach($tecnicos as $tecnico)
                                 <option value="{{ $tecnico->ID }}">{{ $tecnico->NOMBRE }}</option>
                             @endforeach
+                            <option value="15147">Técnico Exterior</option>
                         </select>
 
                         <hr class="border-warning">
@@ -146,7 +149,7 @@
         
         
         // Habilitar el segundo select si se selecciona una opción en el primer select
-        if (select1.value == "DT") {
+        if (select1.value == "DT" or select.value == "TE") {
             habilitar.disabled = false;
             habilitar.style.display = 'block';
             select2.disabled = false;
