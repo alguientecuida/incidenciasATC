@@ -28,7 +28,7 @@
                     @csrf
                     <div class="card-body">
                         
-                        <p>Selecciona la sucursal par ODT:</p>
+                        <p>Selecciona la sucursal para ODT:</p>
                         <select class="js-example-basic-single" name="sucursal" placeholder='Seleccionar sucursal'>
                             <option value="" disabled style="display:none;" selected >Elegir una opción</option>
                             @foreach($sucursales as $sucursal)
@@ -42,8 +42,10 @@
                             @foreach($tecnicos as $tecnico)
                                 <option value="{{ $tecnico->ID }}">{{ $tecnico->NOMBRE }}</option>
                             @endforeach
+                            <option value="TE">Técnico externo</option>
                         </select>
                         <hr class="border-warning">
+                        
                         <div>
                             <p for="observacion" class="form-label">Seleccione el tipo de trabajo:</p>
                             <select class="js-example-basic-single" name="trabajo" placeholder='Seleccionar técnico'>
@@ -55,6 +57,14 @@
                                 <option value="MPD">Mantención Predictiva</option>
                             </select>
                         </div>
+                        <hr class="border-warning">
+                        <input type="checkbox" id="imagen" name="imagen" value="SI">
+                        <label for="imagen"> Marque la casilla si quiere agregar imagenes</label><br>
+                        <hr class="border-warning">
+                        <div>
+                            <label for="observacion" class="form-label">Ingrese la observación </label>
+                            <textarea class="form-control textarea" id="observacion" name='observacion' rows="4" placeholder='Que hay que hacer?'></textarea>
+                        </div>
                         
 
                     </div>
@@ -62,6 +72,7 @@
                         <button id="registrar-btn" class="btn btn-warning text-center" type="submit">Crear reporte</button>
                     </div>
                     </form>
+                    
                 </div>
             </div>
             <div class="col">
@@ -83,4 +94,7 @@
         $('.js-example-basic-multiple').select2({
         });
     </script>
+
+    
+    
 @stop

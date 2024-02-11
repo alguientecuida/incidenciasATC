@@ -60,10 +60,16 @@
                 </div>
                 
               </li>
-              <li class="nav-item pe-5">
+              <li class="nav-item pe-3">
                 <a class="nav-link {{ Route::currentRouteName() == 'Agregar Reporte' ? 'active' : '' }}" href="{{route('Agregar Reporte')}}">Agregar Reporte</a>
+                @if(session('usuario')['TIPO'] == 'Soporte')
+                <li class="nav-item pe-3 mt-3">
+                <a class="nav-link {{ Route::currentRouteName() == "Reportes Locales" ? 'active' : '' }}" href="{{route("Reportes Locales")}}">Reportes Locales</a>
+              </li>
+                @endif
               </li>
               <li class="nav-item pe-5 mt-3 pb-0">
+                
                 @if(session('usuario')['TIPO'] != 'Tecnico')
                 <a class="nav-link {{ Route::currentRouteName() == "ODT'S" ? 'active' : '' }}" href="{{route("ODT'S")}}">ODT's</a>
                 @elseif(session('usuario')['TIPO'] = 'Tecnico')
@@ -78,12 +84,13 @@
               @endif
             </ul>
         </div>
-        <div class="navbar-collapse row g-0 col text-white" id="navbarNav">
+        <div class="navbar-collapse row g-0 col-2 text-white" id="navbarNav">
 
                     Sesion de: {{session('usuario')['NOMBRE']}} <br>
                     Permisos como: {{session('usuario')['TIPO']}}
                     
-                    <a href="{{ route('logout')}}" class='blanco nav-link' style='display: inline !important;'>Cerrar Sesión</a>
+                    <a href="{{ route('logout')}}" class='blanco nav-link' style='display: inline !important;'>
+                      Cerrar sesión</a>
 
         </div>
       </nav>

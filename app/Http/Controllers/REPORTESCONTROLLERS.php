@@ -18,7 +18,10 @@ use App\Http\Requests\AddRevisionRequest;
 use App\Http\Requests\AssingODTRequest;
 use App\Models\BITACORA;
 use App\Models\EMPLEADO;
+use App\Notifications\UpdateReports;
+use App\Notifications\MailVT;
 use Illuminate\Support\Facades\Validator;
+use App\Notifications\InvoicePaid;
 
 
 
@@ -44,7 +47,7 @@ class REPORTESCONTROLLERS extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(CreateReporte $request)
+    public function store(CreateReporte $request) //CREA EL REPORTE
     {
         //
 
@@ -53,15 +56,18 @@ class REPORTESCONTROLLERS extends Controller
 
         // Puedes formatear la fecha y hora según tus necesidades
         $fechaY = $fecha->format('Y-m-d H:i:s');
-
+        // SE GENERA UNA NUEVA INSTANCIA
         $reporte = new REPORTE();
         $reporte->Fecha = $fechaY;
         $reporte->ID_Usuario = session('usuario')['ID'];
-        $reporte->ID_Sucursal = $request->input('sucursal');
-
+        if($request->input('sucursal') != NULL){ //VERIFICA SI TIENE O NO TIENE UNA SUCURSAL SELECCIONADA
+            $reporte->ID_Sucursal = $request->input('sucursal');
+        }
+        
+        //SE ALMACENA EL REPORTE EN LA BD
         $reporte->save();
 
-
+        //ALMACENAMOS LOS TIPOS DE FALLAS, AL SER MUCHOS ES A MUCHOS LOS DEBO ALMACENAR UNO POR UNO EN LA TABLA DE INTERSECCION
         foreach ($request->input('tipos', []) as $i => $ID) {
             $tipo = $request->input('tipos',[$i]);
             $tipoID = $tipo[$i];
@@ -70,9 +76,9 @@ class REPORTESCONTROLLERS extends Controller
 
             //echo($tipoSelect .'<br>');
         }
- 
+        
         $observacion = $request->observacion;
-
+        //GENERAMOS UNA NUEVA INSTANCIA DE UNA REVISION
         $revision = new REVISION();
         $revision->Fecha = $fechaY;
         $revision->Observacion = $observacion;
@@ -80,21 +86,28 @@ class REPORTESCONTROLLERS extends Controller
         $revision->ID_Usuario = session('usuario')['ID'];
         $revision->ID_Reporte = $reporte->ID_Reporte;
 
-        $revision->save();
+        $revision->save(); //SE ALMACENA EN LA BD
 
         $sucursal = SUCURSAL::find($reporte->ID_Sucursal);
-
+        //SE AGREGA EL REGISTRO EN LA BITACORA DEL REPORTE CREADO
         $bitacora = new BITACORA();
         $bitacora->fecha = $fechaY;
-        $bitacora->mensaje = $observacion;
+        $bitacora->mensaje = $observacion; //ES LA MISMA OBSERVACION QUE VA EN EL REPORTE
         $bitacora->detalles = 'Reporte de falla' . $sucursal->NOMBRE_SUCURSAL;
         $bitacora->operador = session('usuario')['NOMBRE'];
         $bitacora->id_sucursal = $reporte->ID_Sucursal;
         $bitacora->tipo_clave = 'Registro Reporte';
         $bitacora->FechaActualizacion = $fechaY;
 
-        $bitacora->save();
+        $bitacora->save();//SE GUARDA EN LA BD
 
+        //SE ENVIA EL CORREO EN LAS SIGUIENTES 5 LINEAS AL AREA DE SOPORTE
+        $recipient = USUARIO::select('CORREO')->where('TIPO', 'Soporte')->where('ESTADO', 'Activado')->get();
+        $data = $revision->Estado;
+        
+        foreach ($recipient as $us)
+            $us->notify(new UpdateReports($data));
+        //SE RETORNA A LA VISTA
         return redirect()->route('Reportes General')->withErrors('1');
     }
 
@@ -110,7 +123,7 @@ class REPORTESCONTROLLERS extends Controller
      * Show the form for editing the specified resource.
      */
     public function edit($id)
-    {
+    {   //AQUI SE ENVIA A LA PAGINA DONDE SE DEBE AGREGAR UNA NUEVA REVISION
         $reporte = REPORTE::find($id);
         $revision = REVISION::select('*')->where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->first();
         $tecnicos = USUARIO::where('ESTADO', 'Activado')->where('TIPO', 'Tecnico')->orWhere('TIPO', 'Soporte')->orWhere('TIPO', 'Jefe Tecnico')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
@@ -157,19 +170,48 @@ class REPORTESCONTROLLERS extends Controller
         dd();
     }
 
-    public function mostrarAllReportes(){
-        $reportes = REPORTE::all();
-        $sucursales = SUCURSAL::all();
-        $reportesSoporte = REPORTE::select('reportes.*')
-        ->join('revisiones', function ($join) {
-            $join->on('reportes.ID_Reporte', '=', 'revisiones.ID_Reporte')
-                ->whereRaw('revisiones.Fecha = (SELECT MAX(Fecha) FROM revisiones WHERE ID_Reporte = reportes.ID_Reporte)')
-                ->where('revisiones.Estado', '=', 'DS');
-        })
-        ->get();
-        //$revision = REVISION::select('Fecha', 'Estado')->where('ID_Reporte', $reportes->ID_Reporte)->orderBy('Fecha', 'desc')->first();
+    //SE MUESTRA TODOS LOS REPORTES Y AQUI INCLUYE EL CODIGO DE FILTRADO EN TIEMPO REAL
+    public function mostrarAllReportes(Request $request){
+        
+        $buscarpor = $request->get('buscarpor');
 
-        return view('layouts.vistas_reportes.reportes_general', ['reportes' => $reportes, 'sucursales' => $sucursales]);
+        if (!$buscarpor) {
+            $reportes = REPORTE::select(
+                'reportes.ID_Reporte',
+                'reportes.Fecha',
+                'sucursales.NOMBRE_SUCURSAL as NombreSucursal',
+                \DB::raw('(SELECT MAX(revisiones.Fecha) FROM revisiones WHERE revisiones.ID_Reporte = reportes.ID_Reporte) as ultima_actualizacion'),
+                \DB::raw('(SELECT TOP 1 revisiones.Estado FROM revisiones WHERE revisiones.ID_Reporte = reportes.ID_Reporte ORDER BY revisiones.Fecha DESC) as ultimo_estado'),
+                \DB::raw('(SELECT STRING_AGG(tipos_fallas.tipo, \', \') FROM reportes_fallas INNER JOIN tipos_fallas ON reportes_fallas.ID_Falla = tipos_fallas.ID_Falla WHERE reportes_fallas.ID_Reporte = reportes.ID_Reporte) as tipos_reporte')
+            )
+                ->join('sucursales', 'reportes.ID_Sucursal', '=', 'sucursales.ID')
+                ->get();
+        } else {
+            $reportes = REPORTE::select(
+                'reportes.ID_Reporte',
+                'reportes.Fecha',
+                'sucursales.NOMBRE_SUCURSAL as NombreSucursal',
+                \DB::raw('(SELECT MAX(revisiones.Fecha) FROM revisiones WHERE revisiones.ID_Reporte = reportes.ID_Reporte) as ultima_actualizacion'),
+                \DB::raw('(SELECT TOP 1 revisiones.Estado FROM revisiones WHERE revisiones.ID_Reporte = reportes.ID_Reporte ORDER BY revisiones.Fecha DESC) as ultimo_estado'),
+                \DB::raw('(SELECT STRING_AGG(tipos_fallas.tipo, \', \') FROM reportes_fallas INNER JOIN tipos_fallas ON reportes_fallas.ID_Falla = tipos_fallas.ID_Falla WHERE reportes_fallas.ID_Reporte = reportes.ID_Reporte) as tipos_reporte')
+            )
+                ->join('sucursales', 'reportes.ID_Sucursal', '=', 'sucursales.ID')
+                ->where('NOMBRE_SUCURSAL', 'like', '%' . $buscarpor . '%')
+                ->get();
+        }
+        
+        
+        
+
+
+
+    
+        return response()->json($reportes);
+
+        
+        
+
+        
         //dd($reportes);
     }
 
@@ -206,7 +248,7 @@ class REPORTESCONTROLLERS extends Controller
         $reporte = REPORTE::find($id_rep);
         $detalles = REVISION::where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->get();
 
-        if($revision->Estado == 'DT'){
+        if($revision->Estado == 'DT' or $revision->Estado == 'TE'){
             $validator = Validator::make($request->all(), [
                 'Fecha_inicio' => 'required|date|after_or_equal:today',
                 'tecnico' => 'required',
@@ -231,6 +273,7 @@ class REPORTESCONTROLLERS extends Controller
             $odt->ID_sucursal = $reporte->ID_Sucursal;
             $odt->Tipo_trabajo = 'MC';
             $odt->ID_reporte = $id_rep;
+            $odt->detalle_trabajo = $revision->Observacion;
 
             $odt->save();
 
@@ -240,7 +283,39 @@ class REPORTESCONTROLLERS extends Controller
             $asignacion->Fecha = $fechaY;
 
             $asignacion->save();
+
+            $recipient = USUARIO::find($request->tecnico);
+            $data = $revision->Estado;
+            
+            $recipient->notify(new UpdateReports($data));
+
+            $recipient_client = SUCURSAL::find($reporte->ID_Sucursal);
+            if($revision->Estado == 'DT'){
+                $data_client = [
+                    'Estado' => $odt->Estado,
+                    'tipo' => $odt->Tipo_trabajo,
+                    'fecha' => $odt->Fecha_inicio,
+                    'tecnico' => $request->tecnico,
+                    'externo' => 'no'
+                ];
+            }elseif($revision->Estado == 'TE'){
+                $data_client = [
+                    'Estado' => $odt->Estado,
+                    'tipo' => $odt->Tipo_trabajo,
+                    'fecha' => $odt->Fecha_inicio,
+                    'tecnico' => $request->tecnico,
+                    'externo' => 'si'
+                ];
+            }
+            $recipient_client->notify(new MailVT($data_client));
+            
             return redirect()->route("ODT'S")->withErrors('1');
+        }elseif($revision->Estado == 'DC'){
+            $recipient = SUCURSAL::find($reporte->ID_Sucursal);
+            $data = $revision->Estado;
+            
+            $recipient->notify(new UpdateReports($data));
+            return redirect()->route('Detalle Reporte', $reporte->ID_Reporte);
         }else{
             return redirect()->route('Detalle Reporte', $reporte->ID_Reporte);
         }
@@ -286,7 +361,7 @@ class REPORTESCONTROLLERS extends Controller
     ->join('revisiones', function ($join) {
         $join->on('reportes.ID_Reporte', '=', 'revisiones.ID_Reporte')
             ->whereRaw('revisiones.Fecha = (SELECT MAX(Fecha) FROM revisiones WHERE ID_Reporte = reportes.ID_Reporte)')
-            ->where('revisiones.Estado', '=', 'DJT');
+            ->where('revisiones.Estado', '=', 'DJT')->orWhere('revisiones.Estado', '=', 'TE');
     })
     ->get();
 
@@ -332,6 +407,43 @@ class REPORTESCONTROLLERS extends Controller
     return view('layouts.vistas_reportes.reportes_dCliente', ['reportes' => $reportes]);
     //return dd($reportes);
     }
+
+    public function pruebaEmail(){
+        $recipient = USUARIO::select('CORREO')->where('TIPO', 'Soporte')->where('ESTADO', 'Activado')->where('USUARIO','19358327-K')->get();
+
+        foreach ($recipient as $us)
+            $us->notify(new UpdateReports("DS"));
+        return dd($recipient);
+    }
+
     
     
+
+    public function reportesLocales(){
+        //$reportes = DB::table('REPORTES')->join('REVISIONES', 'REPORTES.ID_Reporte', '=', 'REVISIONES.ID_Reporte')->where('REVISIONES.Estado', '=', 'F')->select('REPORTES.*')->get();
+        //$reportes = REPORTE::whereHas('revisiones', function ($query) {
+        //    $query->where('Estado', 'DS');
+        //})->latest('ID_Reporte')->first()->get();
+
+        $reportes = REPORTE::join('REPORTES_FALLAS', 'REPORTES.ID_Reporte', '=', 'REPORTES_FALLAS.ID_Reporte')
+        ->join('TIPOS_FALLAS', 'REPORTES_FALLAS.ID_Falla', '=', 'TIPOS_FALLAS.ID_Falla')
+        ->where('TIPOS_FALLAS.tipo', 'Falla Local')
+        ->select('reportes.*')
+        ->get();
+
+
+    return view('layouts.vistas_reportes.fallas_locales', ['reportes' => $reportes]);
+    //return dd($reportes);
+    }
+
+    public function localTerminado($id){
+        
+        $revision = new REVISION();
+        $revision->Fecha = $fechaY;
+        $revision->Estado = 'F';
+        $revision->ID_Usuario = session('usuario')['ID'];
+        $revision->ID_Reporte = $id;
+
+        return redirect()->route('Reportes Locales');
+    }
 }

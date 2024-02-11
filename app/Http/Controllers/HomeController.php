@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ODT; 
 use App\Models\EMPLEADO;
+use App\Models\REPORTE;
+
 class HomeController extends Controller
 {
     //INCIO DE SESION:
@@ -26,7 +28,8 @@ class HomeController extends Controller
 
 
     public function listarTodosReportes(){
-        return view('layouts.vistas_reportes.reportes_general');
+        $reportes = REPORTE::all();
+        return view('layouts.vistas_reportes.reportes_general', ['reportes' => $reportes]);
     }
 
     public function detalleReporte(){
@@ -82,5 +85,9 @@ class HomeController extends Controller
     public function reasignarODT($id){
         $id = $id;
         return view('layouts.odts.reasignar_odt', ['id' => $id]);
+    }
+
+    public function reportesLocales(){
+        return view('layouts.vistas_reportes.fallas_locales');
     }
 }

@@ -55,10 +55,11 @@
                   {{$asignacion->NOMBRE}}@endforeach
                 </td>          
                 <td>@if($odt->Estado == "A") Asignada
+                  @elseif($odt->Estado == "EC") En Camino
                   @elseif($odt->Estado == "EP") En Proceso
                   @elseif($odt->Estado == "P") Pospuesto
                   @elseif($odt->Estado == "F") Finalizada
-                @endif</td>
+                @endif
                 <td>
                     @if($odt->Estado != 'A')
                         {{ \Carbon\Carbon::parse($odt->Fecha_inicio)->format('d-m-Y') }}
@@ -74,16 +75,16 @@
                     @endif
                 </td>
                 <td>
-                  @if($odt->ID_reporte != NULL)
-                  <a class="btn btn-warning material-symbols-outlined text-white" title="Revisar Reporte de ODT" href="{{route('Detalle Reporte', $odt->ID_reporte)}}">info</a> 
-                  @endif
+                  <a class="btn btn-warning material-symbols-outlined text-white" title="Revisar detalle de ODT" href="{{route('Detalle ODT', $odt->ID_odt)}}">info</a> 
+
 
                   @if($odt->Estado == 'F')
                     <a href="{{route('pdf_odt', $odt->ID_odt)}}" class="btn btn-danger text-white" title="Generar PDF"><i class="fa-solid fa-file-pdf"></i></i></a>
                   @endif
 
                   @if(session('usuario')['TIPO'] == 'Jefe Tecnico')
-                  <a class="btn btn-info material-symbols-outlined text-white" title="Reasignar ODT" href="{{route('Reasignar ODT', $odt->ID_odt)}}">info</a> 
+                  <a class="btn btn-info text-white" title="Reasignar ODT" href="{{route('Reasignar ODT', $odt->ID_odt)}}"><i class="fa-solid fa-reply"></i></a> 
+                  
                   @endif
                 </td>
                 @endforeach

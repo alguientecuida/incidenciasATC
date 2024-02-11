@@ -97,7 +97,7 @@ class USUARIOS extends Controller
         $PASS_HASH_1 = $request->only('PASS_HASH');
         $PASS_HASH = implode($PASS_HASH_1);
         $us = implode($USER);
-        $usuario = $result = DB::select("SELECT * FROM USUARIOS WHERE USUARIO = ? AND CONTRASE = ? AND ESTADO = 'Activado'", [$us, $PASS_HASH]);
+        $usuario = $result = DB::select("SELECT * FROM USUARIOS WHERE USUARIO = ? AND CONTRASEÑA = ? AND ESTADO = 'Activado'", [$us, $PASS_HASH]);
         
         if($usuario){
             $us_mostrar = USUARIO::where('USUARIO',$request->USUARIO)->first();
