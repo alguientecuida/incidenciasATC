@@ -24,9 +24,9 @@ use App\Http\Middleware\Encargado;
 //RUTA QUE GENERA EL PDF
 Route::get('/odt/generar/pdf/{id}', [ODTSController::class, 'generarPDF'])->name('pdf_odt')->middleware(['S:Soporte,Jefe Tecnico,Administracion,Tecnico']);
 
-Route::get('/', function () {
-    return USUARIO::all();
-});
+//Route::get('/', function () {
+//    return USUARIO::all();
+//});
 
 
 //RUTAS DE PAGINA

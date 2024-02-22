@@ -24,6 +24,7 @@ use App\Http\Requests\CreateODTRequest;
 use Illuminate\Support\Facades\Validator;
 use App\Notifications\InvoicePaid;
 use App\Notifications\MailVT;
+use App\Notifications\UpdateReports;
 
 
 class ODTSController extends Controller
