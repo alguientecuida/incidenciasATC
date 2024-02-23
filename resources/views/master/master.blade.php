@@ -37,30 +37,39 @@
             <ul class="navbar-nav">
               <li class="nav-item mt-2 pb-0">
                 <div class="dropdown nav-link bg-nav">
-                  <a class="dropdown-toggle nav-link {{ Route::currentRouteName() == 'Reportes General' || Route::currentRouteName() == "Reportes Finalizados" 
-                  || Route::currentRouteName() == "Reportes Derivado a Soporte" || Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' ? 'active' : '' || Route::currentRouteName() == 'Reportes Derivado a Tecnicos' ? : ''}}" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    @if (Route::currentRouteName() == 'Reportes General' || Route::currentRouteName() == "Reportes Finalizados" || Route::currentRouteName() == "Reportes Derivado a Soporte" || Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' || Route::currentRouteName() == 'Reportes Derivado a Tecnicos'
-                    || Route::currentRouteName() == 'Reportes Derivado a Clientes')
-                      {{Route::current()->getName()}}
+                  <a class="dropdown-toggle nav-link {{ 
+                    Route::currentRouteName() == 'Reportes General' || 
+                    Route::currentRouteName() == 'Reportes Finalizados' || 
+                    Route::currentRouteName() == 'Reportes Derivado a Soporte' || 
+                    Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' || 
+                    Route::currentRouteName() == 'Reportes Derivado a Tecnicos' ||
+                    Route::currentRouteName() == 'Reportes Derivado a Clientes' ? 'active' : ''
+                }}" 
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    @if (Route::currentRouteName() == 'Reportes General' || 
+                          Route::currentRouteName() == 'Reportes Finalizados' || 
+                          Route::currentRouteName() == 'Reportes Derivado a Soporte' || 
+                          Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' || 
+                          Route::currentRouteName() == 'Reportes Derivado a Tecnicos' ||
+                          Route::currentRouteName() == 'Reportes Derivado a Clientes')
+                        {{ Route::current()->getName() }}
                     @else
-                      Reportes
+                        Reportes
                     @endif
-                    
-                  </a>
-                  <ul class="dropdown-menu bg-nav">
-                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes General' ? 'active' : '' }}" aria-current="page" href="{{route('Reportes General')}}">Reportes General</a></li>
-                    <li><a class="nav-link {{ Route::currentRouteName() == "Reportes Derivado a Soporte" ? 'active' : '' }}" href="{{route('Reportes Derivado a Soporte')}}">Reportes Derivado a Soporte</</li>
-                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' ? 'active' : '' }}" href="{{route('Reportes Derivado a Jefe Tecnico')}}">Reportes Derivado a Jefe Tecnico</</li>
-                    <li><a class="nav-link {{ Route::currentRouteName() == "Reportes Derivados a Tecnicos" ? 'active' : '' }}" href="{{route('Reportes Derivado a Tecnicos')}}">Reportes Derivado a Tecnicos</</li>
-                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Clientes' ? 'active' : '' }}" href="{{route('Reportes Derivado a Clientes')}}">Reportes Derivado a Cliente</</li>
-                    <li><a class="nav-link {{ Route::currentRouteName() == "Reportes Finalizados" ? 'active' : '' }}" href="{{route('Reportes Finalizados')}}">Reportes Finalizados</</li>
-                    
-                  
-                  </ul>
+                </a>
+                <ul class="dropdown-menu bg-nav">
+                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes General' ? 'active' : '' }}" aria-current="page" href="{{ route('Reportes General') }}">Reportes General</a></li>
+                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Soporte' ? 'active' : '' }}" href="{{ route('Reportes Derivado a Soporte') }}">Reportes Derivado a Soporte</a></li>
+                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Jefe Tecnico' ? 'active' : '' }}" href="{{ route('Reportes Derivado a Jefe Tecnico') }}">Reportes Derivado a Jefe Tecnico</a></li>
+                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Tecnicos' ? 'active' : '' }}" href="{{ route('Reportes Derivado a Tecnicos') }}">Reportes Derivado a Tecnicos</a></li>
+                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Derivado a Clientes' ? 'active' : '' }}" href="{{ route('Reportes Derivado a Clientes') }}">Reportes Derivado a Cliente</a></li>
+                    <li><a class="nav-link {{ Route::currentRouteName() == 'Reportes Finalizados' ? 'active' : '' }}" href="{{ route('Reportes Finalizados') }}">Reportes Finalizados</a></li>
+                </ul>
+                
                 </div>
                 
               </li>
-              <li class="nav-item pe-3">
+              <li class="nav-item pe-3 mt-3">
                 <a class="nav-link {{ Route::currentRouteName() == 'Agregar Reporte' ? 'active' : '' }}" href="{{route('Agregar Reporte')}}">Agregar Reporte</a>
                 @if(session('usuario')['TIPO'] == 'Soporte')
                 <li class="nav-item pe-3 mt-3">
