@@ -11,6 +11,7 @@ use App\Http\Controllers\SUCURSALCONTROLLERS;
 use App\Http\Controllers\TIPO_FALLASCONTROLLERS;
 use App\Http\Controllers\ODTSController;
 use App\Http\Middleware\Encargado;
+use App\Http\Middleware\RedirectIfSessionActive;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,6 +28,9 @@ Route::get('/odt/generar/pdf/{id}', [ODTSController::class, 'generarPDF'])->name
 //Route::get('/', function () {
 //    return USUARIO::all();
 //});
+Route::get('/', function () {
+    Route::get('/reportes', [HomeController::class, 'listarTodosReportes'])->name('Reportes General')->middleware(['S:Soporte,Encargado,Jefe Tecnico,Administracion,Operador,Tecnico']);
+})->middleware('guest');
 
 
 //RUTAS DE PAGINA
