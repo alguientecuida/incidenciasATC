@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="{{asset('css/style.css')}}">
         <script src="https://kit.fontawesome.com/6fe936433f.js" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="icon" href="{{ asset('img/favicon.png') }}" type="image/x-icon"/>
         <title>Iniciar Sesion</title>
       </head>
     <main>
