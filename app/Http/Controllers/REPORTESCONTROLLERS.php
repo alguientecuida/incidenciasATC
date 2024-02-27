@@ -126,7 +126,7 @@ class REPORTESCONTROLLERS extends Controller
     {   //AQUI SE ENVIA A LA PAGINA DONDE SE DEBE AGREGAR UNA NUEVA REVISION
         $reporte = REPORTE::find($id);
         $revision = REVISION::select('*')->where('ID_Reporte', $reporte->ID_Reporte)->orderBy('Fecha', 'desc')->first();
-        $tecnicos = USUARIO::where('ESTADO', 'Activado')->where('TIPO', 'Tecnico')->orWhere('TIPO', 'Soporte')->orWhere('TIPO', 'Jefe Tecnico')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
+        $tecnicos = USUARIO::where('ESTADO', 'Activado')->orWhere('TIPO', 'Soporte')->orWhere('TIPO', 'Jefe Tecnico')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
         return view('layouts.vistas_reportes.agregar_revision', ['reporte'=>$reporte, 'revision'=>$revision, 'tecnicos'=>$tecnicos]);
         //
     }

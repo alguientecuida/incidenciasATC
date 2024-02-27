@@ -72,7 +72,7 @@ class ODTSController extends Controller
         //
         $odt = ODT::find($id_odt);
         $asignacion = ASIGNACION::where('ID_odt', $odt->ID_odt)->first();
-        $tecnicos = USUARIO::where('ESTADO', 'Activado')->where('TIPO', 'Tecnico')->orWhere('TIPO', 'Soporte')->orWhere('TIPO', 'Jefe Tecnico')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
+        $tecnicos = USUARIO::where('ESTADO', 'Activado')->where('TIPO', 'Soporte')->orWhere('NOMBRE', 'Ronald Montilla Andara')->get();
         return view('layouts.odts.reasignar_odt', ['odt' => $odt, 'asignacion'=>$asignacion, 'tecnicos' => $tecnicos]);
         //return dd($odt, $asignacion);
     }
@@ -117,7 +117,7 @@ class ODTSController extends Controller
         ->where('NOMBRE_SUCURSAL', '<>', '-')
         ->orderBy('NOMBRE_SUCURSAL', 'asc')
         ->get();
-        $tecnicos = USUARIO::where('TIPO', 'Tecnico')->get();
+        $tecnicos = USUARIO::where('TIPO', 'Soporte')->get();
 
         return view('layouts.odts.crear_odt', ['tecnicos'=>$tecnicos, 'sucursales'=>$sucursales, ]);
     }
