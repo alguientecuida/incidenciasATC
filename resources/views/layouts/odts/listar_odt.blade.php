@@ -1,7 +1,7 @@
 @extends('master.master')
 @section('contenido_principal')
 
-@if(session('usuario')['TIPO']=='Jefe Tecnico')
+@if(session('usuario')['TIPO']=='Soporte' && session('usuario')['INFORMATICO'] == 'J')
 <a href="{{route('Crear ODT')}}" class="float" title="CREAR ODT">
     <i class="fa-solid fa-plus my-float" title="CREAR ODT" style="color: #ffffff;"></i>
     </a>
@@ -9,7 +9,7 @@
 <div class='container-fluid'>
     <div class="row mt-4 me-5 mb-0">
         <div class="col-auto me-auto"></div>
-        @if(session('usuario')['TIPO']=='Jefe Tecnico')
+        @if(session('usuario')['TIPO']=='Soporte' && session('usuario')['INFORMATICO'] == 'J')
         <div class="col-auto mb-0">
             <b>Desea crear una nueva ODT? </b>
             <a href="{{route('Crear ODT')}}"><button type="button" class="btn btn-warning text-white" title="CREAR ODT"><i class="fa-solid fa-plus" style="color: #ffffff;"></i> Crear ODT</button></a>

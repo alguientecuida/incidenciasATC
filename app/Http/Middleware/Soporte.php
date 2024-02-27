@@ -18,9 +18,23 @@ class Soporte
     {
         if(session()->has('usuario')) {
             if(in_array(session('usuario')['TIPO'], $types)==false){
-                return redirect()
-                    ->route('Reportes General')
-                    ->withErrors('¡Acceso Denegado!');
+                if(in_array('Soporte-I', $types)){
+                    if (session('usuario')['TIPO'] == 'Soporte' && session('usuario')['INFORMATICO'] == 'S') {
+                        return $next($request);
+                    }else{
+                    return redirect()
+                        ->route('Reportes General')
+                        ->withErrors('¡Acceso Denegado!');
+                    }
+                }elseif(in_array('Soporte-J', $types)){
+                    if (session('usuario')['TIPO'] == 'Soporte' && session('usuario')['INFORMATICO'] == 'J') {
+                        return $next($request);
+                    }else{
+                    return redirect()
+                        ->route('Reportes General')
+                        ->withErrors('¡Acceso Denegado!');
+                    }
+                }
             }
             return $next($request);
         }

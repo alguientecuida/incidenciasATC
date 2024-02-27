@@ -102,7 +102,7 @@ class REPORTESCONTROLLERS extends Controller
         $bitacora->save();//SE GUARDA EN LA BD
 
         //SE ENVIA EL CORREO EN LAS SIGUIENTES 5 LINEAS AL AREA DE SOPORTE
-        $recipient = USUARIO::select('CORREO')->where('TIPO', 'Soporte')->where('ESTADO', 'Activado')->get();
+        $recipient = USUARIO::select('CORREO')->where('TIPO', 'Soporte')->where('INFORMATICO', 'S')->get();
         $data = $revision->Estado;
         
         foreach ($recipient as $us)
